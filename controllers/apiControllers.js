@@ -31,8 +31,9 @@ export const renderAdminCategorias = (req, res) => {
 export const renderAdminTickets = (req, res) => {
     res.render('pantallasAdmin/admin-tickets.ejs')
 }
-export const renderAdminUsuarios = (req, res) => {
-    res.render('pantallasAdmin/admin-administradorDeUsuarios.ejs')
+export const renderAdminUsuarios = async (req, res) => {
+    const usuarios = await RepositorioUsuario.verUsuarios()
+    res.render('pantallasAdmin/admin-administradorDeUsuarios.ejs', { usuarios })
 }
 
 //REGISTRAR
@@ -106,7 +107,29 @@ export const loginPost = async (req, res) => {
     }
 }
 
+
+// Logout
 export const logoutGet = (req, res) => {
     res.clearCookie('token')
     res.redirect('/')
+}
+
+
+// POST Asignar ROL a Usuarios
+export const asignarRolPost = async (req, res) => {
+    try {
+        const { usuario_id, rol_id } = req.body
+        const result = await RepositorioUsuario.asignarRol(usuario_id, rol_id)
+        console.log('resultado de la consulta', result)
+
+        if (result === false) {
+            res.status(401).json({ message: 'Error al asignar rol' })
+        }
+
+        res.status(200).json({ message: 'Rol asignado correctamente' })
+
+    } catch (error) {
+        console.error('Error en asignarRolPost:', error)
+        res.status(401).json({ message: 'Error interno del servidor' })
+    }
 }

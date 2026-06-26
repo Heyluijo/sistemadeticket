@@ -7,7 +7,6 @@ const router = Router();
 // RUTAS PÚBLICAS
 router.get('/', apiController.login); // LOGIN
 router.post('/login', apiController.loginPost) // POST LOGIN
-
 router.get('/register', apiController.register) // REGISTRAR
 router.post('/register', apiController.registerPost) // POST REGISTRAR
 
@@ -20,6 +19,5 @@ router.get('/adminCategorias', verificarToken, apiController.renderAdminCategori
 router.get('/adminTickets', verificarToken, apiController.renderAdminTickets) // ADMINISTRADOR
 router.get('/adminUsuarios', verificarToken, apiController.renderAdminUsuarios) // ADMINISTRADOR
 router.get('/logout', apiController.logoutGet) // LOGOUT
-
 
 export default router;

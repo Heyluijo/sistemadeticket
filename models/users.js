@@ -72,4 +72,17 @@ export class RepositorioUsuario {
         return usuarioDb;
     }
 
+    static async asignarRol(usuario_id, rol_id) {
+        if (!usuario_id || !rol_id) {
+            return false;
+        }
+        const query = `
+            UPDATE usuarios_roles
+            SET rol_id = $2
+            WHERE usuario_id = $1
+            RETURNING *;
+        `;
+        return await ejecutarConsulta(query, [usuario_id, rol_id]);
+    }
+
 }
