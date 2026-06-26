@@ -1,0 +1,12 @@
+<div class="<%= activeTab === 'general' ? 'bg-slate-900 p-2 rounded mb-2 flex items-center font-bold text-sm text-white' : 'p-2 mb-2 flex items-center text-sm text-gray-300 hover:text-white' %>">
+    <a href="/admin" class="flex items-center w-full"><span class="mr-2">🎛️</span> Panel General</a>
+</div>
+<div class="<%= activeTab === 'usuarios' ? 'bg-slate-900 p-2 rounded mb-2 flex items-center font-bold text-sm text-white' : 'p-2 mb-2 flex items-center text-sm text-gray-300 hover:text-white' %>">
+    <a href="/adminUsuarios" class="flex items-center w-full"><span class="mr-2">👥</span> Usuarios</a>
+</div>
+<div class="<%= activeTab === 'categorias' ? 'bg-slate-900 p-2 rounded mb-2 flex items-center font-bold text-sm text-white' : 'p-2 mb-2 flex items-center text-sm text-gray-300 hover:text-white' %>">
+    <a href="/adminCategorias" class="flex items-center w-full"><span class="mr-2">🏷️</span> Categorías</a>
+</div>
+<div class="<%= activeTab === 'tickets' ? 'bg-slate-900 p-2 rounded mb-2 flex items-center font-bold text-sm text-white' : 'p-2 mb-2 flex items-center text-sm text-gray-300 hover:text-white' %>">
+    <a href="/adminTickets" class="flex items-center w-full"><span class="mr-2">🎫</span> Tickets</a>
+</div>
