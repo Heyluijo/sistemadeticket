@@ -10,6 +10,7 @@ export const verificarToken = (req, res, next) => {
     try {
         const decodificado = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decodificado;
+        res.locals.user = decodificado; // Hace disponible al usuario en todas las vistas EJS
         next();
     } catch (error) {
         console.error('Error al verificar token:', error.message);

@@ -1,5 +1,7 @@
 import { RepositorioUsuario } from '../models/users.js';
+import ticketRepositorio from '../models/tickets.js';
 import jwt from "jsonwebtoken";
+import { ejecutarConsulta } from '../database/db.js';
 
 //LOGIN
 export const login = (req, res) => {
@@ -61,6 +63,8 @@ export const registerPost = async (req, res) => {
     }
 }
 
+
+
 export const loginPost = async (req, res) => {
     try {
         const { usuario, password } = req.body
@@ -75,9 +79,10 @@ export const loginPost = async (req, res) => {
                 id: result.id,
                 usuario: result.usuario,
                 email: result.email,
-                rol: result.rol
+                rol: result.rol,
+                nombre: result.nombre
             },
-            process.env.JWT_SECRET || 'mi_secreto_super_seguro',
+            process.env.JWT_SECRET,
             {
                 expiresIn: process.env.JWT_EXPIRES || '24h'
             }
@@ -116,20 +121,64 @@ export const logoutGet = (req, res) => {
 
 
 // POST Asignar ROL a Usuarios
-export const asignarRolPost = async (req, res) => {
+export const asignarRol = async (req, res) => {
     try {
-        const { usuario_id, rol_id } = req.body
-        const result = await RepositorioUsuario.asignarRol(usuario_id, rol_id)
-        console.log('resultado de la consulta', result)
+        const { id, rol } = req.body
+        const result = await RepositorioUsuario.asignarRol(id, rol)
 
         if (result === false) {
             res.status(401).json({ message: 'Error al asignar rol' })
         }
+        console.log('\n*********************************')
+        console.log('Se actualizo el rol correctamente')
+        console.log('\n*********************************')
 
         res.status(200).json({ message: 'Rol asignado correctamente' })
 
     } catch (error) {
         console.error('Error en asignarRolPost:', error)
+        console.log('\n*********************************')
+        console.log('Error en asignarRolPost')
+        console.log('\n*********************************')
+        res.status(401).json({ message: 'Error interno del servidor' })
+    }
+}
+
+// CREAR TICKET
+export const crearTicketPost = async (req, res) => {
+    try {
+        const { nombre, descripcion, tecnico_automatico, id_tecnico, usuario_id, usuario } = req.body
+        const result = await ticketRepositorio.crearTicket(nombre, descripcion, tecnico_automatico, id_tecnico, usuario_id, usuario)
+        console.log('resultado de la consulta', result)
+
+        if (typeof result === 'string') {
+            return res.render('register.ejs', { error: result })
+        }
+
+        res.status(200).json({
+            message: "ticket Creado",
+            ticket: result
+        })
+    } catch (error) {
+        console.error('Error en crearTicketPost:', error)
+        res.status(401).json({ message: 'Error interno del servidor' })
+    }
+}
+
+
+export const verTicketsGet = async (req, res) => {
+    try {
+        const result = await ticketRepositorio.verTickets()
+        console.log('resultado de la consulta', result)
+
+        if (typeof result === 'string') {
+            return res.render('register.ejs', { error: result })
+        }
+
+        res.status(200).json(result)
+
+    } catch (error) {
+        console.error('Error en verTicketsGet:', error)
         res.status(401).json({ message: 'Error interno del servidor' })
     }
 }
