@@ -33,6 +33,7 @@
     --color-purple-100: oklch(94.6% 0.033 307.174);
     --color-purple-500: oklch(62.7% 0.265 303.9);
     --color-purple-700: oklch(49.6% 0.265 301.924);
+    --color-slate-200: oklch(92.9% 0.013 255.508);
     --color-slate-400: oklch(70.4% 0.04 256.788);
     --color-slate-500: oklch(55.4% 0.046 257.417);
     --color-slate-600: oklch(44.6% 0.043 257.281);
@@ -245,9 +246,6 @@
   .m-4 {
     margin: calc(var(--spacing) * 4);
   }
-  .my-2 {
-    margin-block: calc(var(--spacing) * 2);
-  }
   .mt-1 {
     margin-top: var(--spacing);
   }
@@ -283,9 +281,6 @@
   }
   .flex {
     display: flex;
-  }
-  .h-2 {
-    height: calc(var(--spacing) * 2);
   }
   .h-2\.5 {
     height: calc(var(--spacing) * 2.5);
@@ -494,9 +489,6 @@
   .bg-gray-200 {
     background-color: var(--color-gray-200);
   }
-  .bg-gray-400 {
-    background-color: var(--color-gray-400);
-  }
   .bg-gray-600 {
     background-color: var(--color-gray-600);
   }
@@ -521,14 +513,8 @@
   .bg-red-600 {
     background-color: var(--color-red-600);
   }
-  .bg-slate-400 {
-    background-color: var(--color-slate-400);
-  }
   .bg-slate-500 {
     background-color: var(--color-slate-500);
-  }
-  .bg-slate-600 {
-    background-color: var(--color-slate-600);
   }
   .bg-slate-700 {
     background-color: var(--color-slate-700);
@@ -721,6 +707,12 @@
   .text-red-700 {
     color: var(--color-red-700);
   }
+  .text-slate-200 {
+    color: var(--color-slate-200);
+  }
+  .text-slate-500 {
+    color: var(--color-slate-500);
+  }
   .text-white {
     color: var(--color-white);
   }
@@ -830,6 +822,18 @@
       outline-style: none;
     }
   }
+}
+@import url('https://fonts.googleapis.com/css2?family=Englebert&family=Oswald:wght@300&display=swap');
+.oswald {
+  font-family: "Oswald", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+}
+.englebert-regular {
+  font-family: "Englebert", cursive;
+  font-weight: 400;
+  font-style: normal;
 }
 @property --tw-space-y-reverse {
   syntax: "*";

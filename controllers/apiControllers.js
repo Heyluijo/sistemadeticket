@@ -80,7 +80,8 @@ export const loginPost = async (req, res) => {
                 usuario: result.usuario,
                 email: result.email,
                 rol: result.rol,
-                nombre: result.nombre
+                nombre: result.nombre,
+                apellido: result.apellido
             },
             process.env.JWT_SECRET,
             {
