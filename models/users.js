@@ -40,16 +40,25 @@ export class RepositorioUsuario {
         const hashPassword = await bcrypt.hash(password, 10);
 
         const query = `
-            INSERT INTO usuarios (
-                nombre,
-                apellido,
-                usuario,
-                email,
-                password_hash
-            ) VALUES ($1, $2, $3, $4, $5)
-            RETURNING *;
-        `;
-        return await ejecutarConsultaNeon(query, [nombre, apellido, usuario, email, hashPassword]);
+    INSERT INTO usuarios (
+        nombre,
+        apellido,
+        usuario,
+        email,
+        password_hash,
+        rol
+    ) VALUES ($1, $2, $3, $4, $5, $6)
+    RETURNING *;
+`;
+
+        return await ejecutarConsultaNeon(query, [
+            nombre,
+            apellido,
+            usuario,
+            email,
+            hashPassword,
+            'usuario'
+        ]);
     }
 
     static async login(usuario, password) {
