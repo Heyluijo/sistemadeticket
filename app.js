@@ -2,9 +2,7 @@ import express from 'express';
 import 'dotenv/config';
 import cookieParser from 'cookie-parser';
 import apiRouter from './routers/apiRouters.js';
-import * as db from './database/db.js';
-
-import { RepositorioUsuario } from './models/users.js'
+import * as db from './database/dbNeon.js';
 
 const app = express();
 const PORT = process.env.PUERTOAPP
@@ -30,18 +28,6 @@ db.conectarDB()
 
 //Rutas
 app.use('/', apiRouter);
-
-
-/*
-(async () => {
-    try {
-        const verUsuarios = await RepositorioUsuario.verUsuarios();
-        console.log('Usuarios registrados', verUsuarios);
-    } catch (error) {
-        console.error("Error al obtener usuarios:", error);
-    }
-})();
-*/
 
 
 app.listen(PORT, () => {

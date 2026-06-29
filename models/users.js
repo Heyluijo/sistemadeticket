@@ -1,4 +1,5 @@
 import { ejecutarConsulta } from "../database/db.js";
+import { ejecutarConsultaNeon } from "../database/dbNeon.js";
 import bcrypt from 'bcrypt';
 
 export class RepositorioUsuario {
@@ -9,7 +10,7 @@ export class RepositorioUsuario {
             FROM usuarios;
         `;
 
-        return await ejecutarConsulta(query);
+        return await ejecutarConsultaNeon(query);
     }
 
     static async crearUsuario(nombre, apellido, usuario, email, password, repassword) {
@@ -48,7 +49,7 @@ export class RepositorioUsuario {
             ) VALUES ($1, $2, $3, $4, $5)
             RETURNING *;
         `;
-        return await ejecutarConsulta(query, [nombre, apellido, usuario, email, hashPassword]);
+        return await ejecutarConsultaNeon(query, [nombre, apellido, usuario, email, hashPassword]);
     }
 
     static async login(usuario, password) {
@@ -56,7 +57,7 @@ export class RepositorioUsuario {
             return false;
         }
 
-        const resultados = await ejecutarConsulta('SELECT * FROM usuarios WHERE usuario = $1', [usuario]);
+        const resultados = await ejecutarConsultaNeon('SELECT * FROM usuarios WHERE usuario = $1', [usuario]);
 
         if (resultados.length === 0) {
             console.log('Usuario incorrecto');
@@ -82,7 +83,7 @@ export class RepositorioUsuario {
             WHERE id = $1
             RETURNING *;
         `;
-        return await ejecutarConsulta(query, [id, rol]);
+        return await ejecutarConsultaNeon(query, [id, rol]);
     }
 
 }
