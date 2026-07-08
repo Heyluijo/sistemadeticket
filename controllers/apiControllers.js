@@ -81,7 +81,8 @@ export const loginPost = async (req, res) => {
                 email: result.email,
                 rol: result.rol,
                 nombre: result.nombre,
-                apellido: result.apellido
+                apellido: result.apellido,
+                categoriaAsignada: result.categoriaAsignada || result.categoríaAsignada
             },
             process.env.JWT_SECRET,
             {
@@ -196,6 +197,41 @@ export const verCategorias = async (req, res) => {
 
     } catch (error) {
         console.error('Error en verCategorias:', error)
+        res.status(401).json({ message: 'Error interno del servidor' })
+    }
+
+}
+
+export const verUsuariosAsignados = async (req, res) => {
+    try {
+        console.log('Se solicito el usuario asignado')
+        const result = await categoriaRepositorio.usuarioAsignado()
+
+        if (typeof result === 'string') {
+            return res.render('register.ejs', { error: result })
+        }
+
+        res.status(200).json(result)
+
+    } catch (error) {
+        console.error('Error en verUsuarioAsignado:', error)
+        res.status(401).json({ message: 'Error interno del servidor' })
+    }
+}
+
+export const ticketsAsignados = async (req, res) => {
+    try {
+        console.log('Se solicito los tickets asignados')
+        const result = await ticketRepositorio.ticketsAsignados()
+
+        if (typeof result === 'string') {
+            return res.render('register.ejs', { error: result })
+        }
+
+        res.status(200).json(result)
+
+    } catch (error) {
+        console.error('Error en ticketsAsignados:', error)
         res.status(401).json({ message: 'Error interno del servidor' })
     }
 }

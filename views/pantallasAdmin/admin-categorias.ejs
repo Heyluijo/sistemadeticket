@@ -10,7 +10,7 @@
 
 <body class="bg-gray-100 flex h-screen font-sans">
 
-    <%- include('../partials/menuLateral.ejs') %>
+    <%- include('../partials/menuLateral.ejs', { activeTab: 'categorias' }) %>
 
         <div class="flex-1 p-8 overflow-y-auto">
             <div class="flex justify-between items-center mb-8 border-b border-gray-300 pb-4">
@@ -42,9 +42,6 @@
                                 TÉCNICO
                                 AUTOMÁTICO</th>
                             <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
-                                REGISTRO
-                            </th>
-                            <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
                                 ACCIONES
                             </th>
                         </tr>
@@ -58,17 +55,16 @@
         <script>
             const listadoCategorias = document.querySelector('#listadoCategorias');
 
-            fetch('/verCategorias')
+            fetch('/verUsuariosAsignados')
                 .then(response => response.json())
-                .then(categorias => {
+                .then(usuarios => {
                     listadoCategorias.innerHTML = '';
-                    categorias.forEach(categoria => {
+                    usuarios.forEach(usuario => {
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
-                            <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold w-48">${categoria.nombreCategoria}</td>
-                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">${categoria.descripcion}</td>
-                            <td class="border border-gray-200 px-4 py-4 text-green-700 font-bold text-xs">${categoria.tecnicoAsignado}</td>
-                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">N/A</td>
+                            <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold w-48">${usuario.nombre}</td>
+                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">${usuario.categoria}</td>
+                            <td class="border border-gray-200 px-4 py-4 text-green-700 font-bold text-xs">${usuario.descripcion}</td>
                             <td class="border border-gray-200 px-4 py-4">
                                 <div class="flex flex-col space-y-2 w-20">
                                     <button

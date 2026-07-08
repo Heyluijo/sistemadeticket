@@ -10,7 +10,7 @@
 
 <body class="bg-gray-100 flex h-screen font-sans">
 
-    <%- include('../partials/menuLateral.ejs') %>
+    <%- include('../partials/menuLateral.ejs', { activeTab: 'tickets' }) %>
 
         <div class="flex-1 p-8 overflow-y-auto">
             <div class="mb-8 border-b border-gray-300 pb-4">
@@ -33,13 +33,14 @@
                             <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">FECHA
                             </th>
                             <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
-                                USUARIO
+                                SOLICITANTE
                             </th>
                             <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
-                                CATEGORÍA
+                                CATEGORIAS
                             </th>
+
                             <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
-                                DESCRIPCIÓN</th>
+                                DESCRIPCION</th>
                             <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
                                 SOPORTE
                                 TÉCNICO</th>
@@ -51,173 +52,108 @@
                             </th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800">t-<br>42uchk</td>
-                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">17/6/2026</td>
-                            <td class="border border-gray-200 px-4 py-4">
-                                <p class="font-bold text-gray-800 text-xs">Pedro Usuario</p>
-                                <p class="text-gray-400 text-xs">user1@tickets.com</p>
-                            </td>
-                            <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs">Hardware y
-                                Periféricos</td>
-                            <td class="border border-gray-200 px-4 py-4 text-gray-800 text-xs font-bold">NO FUNCIONA ...
-                            </td>
-                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">
-                                👤 Juan Soporte<br>(Redes)
-                            </td>
-                            <td class="border border-gray-200 px-4 py-4">
-                                <span
-                                    class="bg-yellow-100 border border-yellow-300 text-yellow-700 px-2 py-1 rounded text-xs font-bold uppercase shadow-sm">ABIERTO</span>
-                            </td>
-                            <td class="border border-gray-200 px-4 py-4">
-                                <div class="flex flex-col space-y-1 w-16">
-                                    <button
-                                        class="bg-yellow-500 hover:bg-yellow-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
-                                        <span class="mr-1">✏️</span> Editar
-                                    </button>
-                                    <button
-                                        class="bg-red-500 hover:bg-red-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
-                                        <span class="mr-1">🗑️</span> Borrar
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800">t-<br>zgd376</td>
-                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">16/6/2026</td>
-                            <td class="border border-gray-200 px-4 py-4">
-                                <p class="font-bold text-gray-800 text-xs">Pedro Usuario</p>
-                                <p class="text-gray-400 text-xs">user1@tickets.com</p>
-                            </td>
-                            <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs">Software
-                                y<br>Aplicaciones</td>
-                            <td class="border border-gray-200 px-4 py-4 text-gray-800 text-xs font-bold">No funciona
-                                offi...
-                            </td>
-                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">
-                                👤 Maria Soporte<br>(Software)
-                            </td>
-                            <td class="border border-gray-200 px-4 py-4">
-                                <span
-                                    class="bg-yellow-100 border border-yellow-300 text-yellow-700 px-2 py-1 rounded text-xs font-bold uppercase shadow-sm">ABIERTO</span>
-                            </td>
-                            <td class="border border-gray-200 px-4 py-4">
-                                <div class="flex flex-col space-y-1 w-16">
-                                    <button
-                                        class="bg-yellow-500 hover:bg-yellow-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
-                                        <span class="mr-1">✏️</span> Editar
-                                    </button>
-                                    <button
-                                        class="bg-red-500 hover:bg-red-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
-                                        <span class="mr-1">🗑️</span> Borrar
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800">t-3</td>
-                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">16/6/2026</td>
-                            <td class="border border-gray-200 px-4 py-4">
-                                <p class="font-bold text-gray-800 text-xs">Pedro Usuario</p>
-                                <p class="text-gray-400 text-xs">user1@tickets.com</p>
-                            </td>
-                            <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs">Otros /
-                                Consultas<br>Generales</td>
-                            <td class="border border-gray-200 px-4 py-4 text-gray-800 text-xs font-bold">Solicitud de
-                                inst...</td>
-                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">
-                                👤 Juan Soporte<br>(Redes)
-                            </td>
-                            <td class="border border-gray-200 px-4 py-4">
-                                <span
-                                    class="bg-yellow-100 border border-yellow-300 text-yellow-700 px-2 py-1 rounded text-xs font-bold uppercase shadow-sm">ABIERTO</span>
-                            </td>
-                            <td class="border border-gray-200 px-4 py-4">
-                                <div class="flex flex-col space-y-1 w-16">
-                                    <button
-                                        class="bg-yellow-500 hover:bg-yellow-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
-                                        <span class="mr-1">✏️</span> Editar
-                                    </button>
-                                    <button
-                                        class="bg-red-500 hover:bg-red-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
-                                        <span class="mr-1">🗑️</span> Borrar
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800">t-1</td>
-                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">15/6/2026</td>
-                            <td class="border border-gray-200 px-4 py-4">
-                                <p class="font-bold text-gray-800 text-xs">Pedro Usuario</p>
-                                <p class="text-gray-400 text-xs">user1@tickets.com</p>
-                            </td>
-                            <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs">Redes
-                                y<br>Telecomunicaciones</td>
-                            <td class="border border-gray-200 px-4 py-4 text-gray-800 text-xs font-bold">No tengo
-                                acces...
-                            </td>
-                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">
-                                👤 Juan Soporte<br>(Redes)
-                            </td>
-                            <td class="border border-gray-200 px-4 py-4">
-                                <span
-                                    class="bg-green-100 border border-green-300 text-green-700 px-2 py-1 rounded text-xs font-bold uppercase shadow-sm">SOLUCIONADO</span>
-                            </td>
-                            <td class="border border-gray-200 px-4 py-4">
-                                <div class="flex flex-col space-y-1 w-16">
-                                    <button
-                                        class="bg-yellow-500 hover:bg-yellow-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
-                                        <span class="mr-1">✏️</span> Editar
-                                    </button>
-                                    <button
-                                        class="bg-red-500 hover:bg-red-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
-                                        <span class="mr-1">🗑️</span> Borrar
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800">t-2</td>
-                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">14/6/2026</td>
-                            <td class="border border-gray-200 px-4 py-4">
-                                <p class="font-bold text-gray-800 text-xs">Ana Usuario</p>
-                                <p class="text-gray-400 text-xs">user2@tickets.com</p>
-                            </td>
-                            <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs">Software
-                                y<br>Aplicaciones</td>
-                            <td class="border border-gray-200 px-4 py-4 text-gray-800 text-xs font-bold">El programa
-                                Exc...
-                            </td>
-                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">
-                                👤 Maria Soporte<br>(Software)
-                            </td>
-                            <td class="border border-gray-200 px-4 py-4">
-                                <span
-                                    class="bg-green-100 border border-green-300 text-green-700 px-2 py-1 rounded text-xs font-bold uppercase shadow-sm">SOLUCIONADO</span>
-                            </td>
-                            <td class="border border-gray-200 px-4 py-4">
-                                <div class="flex flex-col space-y-1 w-16">
-                                    <button
-                                        class="bg-yellow-500 hover:bg-yellow-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
-                                        <span class="mr-1">✏️</span> Editar
-                                    </button>
-                                    <button
-                                        class="bg-red-500 hover:bg-red-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
-                                        <span class="mr-1">🗑️</span> Borrar
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                    <tbody id="tablaTicketsAdmin">
+                        <!-- Cargado dinámicamente -->
                     </tbody>
                 </table>
             </div>
         </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                cargarTickets();
+            });
+
+            function cargarTickets() {
+                fetch('/verTickets')
+                    .then(response => response.json())
+                    .then(tickets => {
+                        const tabla = document.querySelector('#tablaTicketsAdmin');
+                        tabla.innerHTML = '';
+
+                        tickets.forEach(t => {
+                            const fecha = new Date(t.fecha_creacion).toLocaleDateString('es-ES');
+                            const fechaCierre = t.fecha_cierre ? new Date(t.fecha_cierre).toLocaleDateString('es-ES') : '-';
+
+                            // Texto de estado
+                            let estadoTexto = '';
+                            let estadoClass = '';
+                            if (t.fecha_cierre) {
+                                estadoTexto = 'SOLUCIONADO';
+                                estadoClass = 'bg-green-100 border-green-300 text-green-700';
+                            } else {
+                                estadoTexto = 'ABIERTO';
+                                estadoClass = 'bg-yellow-100 border-yellow-300 text-yellow-700';
+                            }
+
+                            // Soporte técnico
+                            let soporteTexto = t.soporte_tecnico || 'Sin asignar';
+
+                            // Botones de acción
+                            let acciones = `
+                                <div class="flex flex-col space-y-1 w-16">
+                                    <button 
+                                        onclick="editarTicket('${t.id}')"
+                                        class="bg-yellow-500 hover:bg-yellow-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
+                                        <span class="mr-1">✏️</span> Editar
+                                    </button>
+                                    <button 
+                                        onclick="borrarTicket('${t.id}')"
+                                        class="bg-red-500 hover:bg-red-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
+                                        <span class="mr-1">🗑️</span> Borrar
+                                    </button>
+                                </div>
+                            `;
+
+                            const fila = document.createElement('tr');
+                            fila.innerHTML = `
+                                <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800">t-${t.id}</td>
+                                <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">${fecha}</td>
+                                <td class="border border-gray-200 px-4 py-4">
+                                    <p class="font-bold text-gray-800 text-xs">${t.usuario}</p>
+                                </td>
+                                <td class="border border-gray-200 px-4 py-4">
+                                    <p class="font-bold text-gray-800 text-xs">${t.nombre}</p>
+                                </td>
+
+                                <td class="border border-gray-200 px-4 py-4 text-gray-800 text-xs font-bold">
+                                    ${t.descripcion.substring(0, 30)}...
+                                </td>
+                                <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">
+                                    ${soporteTexto}
+                                </td>
+                                <td class="border border-gray-200 px-4 py-4">
+                                    <span class="bg-yellow-100 border border-yellow-300 text-yellow-700 px-2 py-1 rounded text-xs font-bold uppercase shadow-sm">
+                                        ${estadoTexto}
+                                    </span>
+                                </td>
+                                <td class="border border-gray-200 px-4 py-4">
+                                    ${acciones}
+                                </td>
+                            `;
+                            tabla.appendChild(fila);
+                        });
+                    });
+            }
+
+            function editarTicket(id) {
+                // Implementar la edición modal o redirección
+                alert('Editar ticket: ' + id);
+                // window.location.href = '/admin/tickets/' + id;
+            }
+
+            function borrarTicket(id) {
+                if (confirm('¿Estás seguro de que quieres borrar el ticket ' + id + '?')) {
+                    fetch('/delete-ticket/' + id, { method: 'DELETE' })
+                        .then(response => response.json())
+                        .then(data => {
+                            alert(data.message);
+                            cargarTickets();
+                        })
+                        .catch(err => console.error(err));
+                }
+            }
+        </script>
 
 </body>
 

@@ -60,6 +60,22 @@ class ticketRepositorio {
     static async eliminarTicket() {
 
     }
+
+    static async ticketsAsignados() {
+        const query = `
+                    SELECT
+    t.*,
+    u.nombre AS nombre_usuario,
+    u.apellido AS apellido_usuario,
+    u.email,
+    u.rol
+FROM
+    tickets t
+    JOIN usuarios u ON t.nombre = u."categoriaAsignada"
+ORDER BY t.id DESC
+                    `
+        return await ejecutarConsultaNeon(query)
+    }
 }
 
 export default ticketRepositorio

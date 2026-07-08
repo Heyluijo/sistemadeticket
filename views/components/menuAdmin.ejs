@@ -6,31 +6,29 @@
     </p>
     <p class="text-slate-200 text-xs text-center font-bold mt-1">[ <%= user.rol %> ]</p>
 </div>
-
-<div class="">
-
-    <hr class="w-full bg-gray-600 border">
-
-    <div
-        class="<%= activeTab === 'general' ? 'bg-slate-900 p-2 rounded mb-2 flex items-center font-bold text-sm text-white' : 'p-2 mb-2 flex items-center text-sm text-gray-300 hover:text-white' %>">
-        <a href="/admin" class="flex items-center w-full"><span class="mr-2">🎛️</span> Panel General</a>
-    </div>
-    <div
-        class="<%= activeTab === 'usuarios' ? 'bg-slate-900 p-2 rounded mb-2 flex items-center font-bold text-sm text-white' : 'p-2 mb-2 flex items-center text-sm text-gray-300 hover:text-white' %>">
-        <a href="/adminUsuarios" class="flex items-center w-full"><span class="mr-2">👥</span> Usuarios</a>
-    </div>
-    <div
-        class="<%= activeTab === 'categorias' ? 'bg-slate-900 p-2 rounded mb-2 flex items-center font-bold text-sm text-white' : 'p-2 mb-2 flex items-center text-sm text-gray-300 hover:text-white' %>">
-        <a href="/adminCategorias" class="flex items-center w-full"><span class="mr-2">🏷️</span> Categorías</a>
-    </div>
-    <div
-        class="<%= activeTab === 'tickets' ? 'bg-slate-900 p-2 rounded mb-2 flex items-center font-bold text-sm text-white' : 'p-2 mb-2 flex items-center text-sm text-gray-300 hover:text-white' %>">
-        <a href="/adminTickets" class="flex items-center w-full"><span class="mr-2">🎫</span> Tickets</a>
-    </div>
-</div>
-
-
 <% if (user.rol==='Admin' ) { %>
+    <div class="">
+
+        <hr class="w-full bg-gray-600 border">
+
+        <div
+            class="<%= activeTab === 'general' ? 'bg-slate-900 p-2 rounded mb-2 flex items-center font-bold text-sm text-white' : 'p-2 mb-2 flex items-center text-sm text-gray-300 hover:text-white' %>">
+            <a href="/admin" class="flex items-center w-full"><span class="mr-2">🎛️</span> Panel General</a>
+        </div>
+        <div
+            class="<%= activeTab === 'usuarios' ? 'bg-slate-900 p-2 rounded mb-2 flex items-center font-bold text-sm text-white' : 'p-2 mb-2 flex items-center text-sm text-gray-300 hover:text-white' %>">
+            <a href="/adminUsuarios" class="flex items-center w-full"><span class="mr-2">👥</span> Usuarios</a>
+        </div>
+        <div
+            class="<%= activeTab === 'categorias' ? 'bg-slate-900 p-2 rounded mb-2 flex items-center font-bold text-sm text-white' : 'p-2 mb-2 flex items-center text-sm text-gray-300 hover:text-white' %>">
+            <a href="/adminCategorias" class="flex items-center w-full"><span class="mr-2">🏷️</span> Categorías</a>
+        </div>
+        <div
+            class="<%= activeTab === 'tickets' ? 'bg-slate-900 p-2 rounded mb-2 flex items-center font-bold text-sm text-white' : 'p-2 mb-2 flex items-center text-sm text-gray-300 hover:text-white' %>">
+            <a href="/adminTickets" class="flex items-center w-full"><span class="mr-2">🎫</span> Tickets</a>
+        </div>
+    </div>
+
     <br>
     <h3 class="text-gray-500 text-sm">Vistas de Usuarios:</h3>
     <hr class="border-gray-600 mb-2">
@@ -44,7 +42,7 @@
     </div>
     <div
         class="<%= activeTab === 'gestionDeTicket' ? 'bg-slate-900 p-2 rounded mb-2 flex items-center font-bold text-sm text-white' : 'p-2 mb-2 flex items-center text-sm text-gray-300 hover:text-white' %>">
-        <a href="/gestionDeTicket" class="flex items-center w-full"><span class="mr-2">🎛️</span> Gestion De Ticket</a>
+        <a href="/gestionDeTicket" class="flex items-center w-full"><span class="mr-2">🎛️</span> Gestion De
+            Ticket</a>
     </div>
-
     <% } %>

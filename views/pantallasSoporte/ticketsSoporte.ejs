@@ -9,8 +9,11 @@
             </div>
 
             <div class="bg-slate-700 m-4 p-3 rounded">
-                <p class="font-bold text-sm">Maria Soporte (Software)</p>
-                <p class="text-blue-300 text-xs font-bold mt-1">[ SOPORTE ]</p>
+                <p class="font-bold text-sm">
+                    <%= user.nombre || '' %>
+                        <%= user.apellido || '' %> (<%= user.categoriaAsignada || 'Sin Categoría' %>)
+                </p>
+                <p class="text-blue-300 text-xs font-bold mt-1">[ <%= user.rol.toUpperCase() %> ]</p>
             </div>
 
             <div class="flex-1 px-4 mt-2">
@@ -60,53 +63,78 @@
                                 ACCIÓN</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800 text-xs">t-zgd376</td>
-                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">16/6/2026</td>
-                            <td class="border border-gray-200 px-4 py-4">
-                                <p class="font-bold text-gray-800 text-xs">Pedro Usuario</p>
-                                <p class="text-gray-400 text-xs">user1@tickets.com</p>
-                            </td>
-                            <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs">Software y
-                                Aplicaciones</td>
-                            <td class="border border-gray-200 px-4 py-4 text-gray-800 text-xs">No funciona office</td>
-                            <td class="border border-gray-200 px-4 py-4 text-center">
-                                <span
-                                    class="bg-yellow-100 border border-yellow-300 text-yellow-700 px-2 py-1 rounded text-[10px] font-bold uppercase shadow-sm">ABIERTO</span>
-                            </td>
-                            <td class="border border-gray-200 px-4 py-4 text-center">
-                                <button
-                                    class="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1.5 rounded flex items-center justify-center font-bold shadow w-full">
-                                    <span class="mr-1 text-[10px]">✔️</span> Resolver
-                                </button>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800 text-xs">t-2</td>
-                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">14/6/2026</td>
-                            <td class="border border-gray-200 px-4 py-4">
-                                <p class="font-bold text-gray-800 text-xs">Ana Usuario</p>
-                                <p class="text-gray-400 text-xs">user2@tickets.com</p>
-                            </td>
-                            <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs">Software y
-                                Aplicaciones</td>
-                            <td class="border border-gray-200 px-4 py-4 text-gray-800 text-xs">El programa Excel no
-                                abre.
-                                Mues...</td>
-                            <td class="border border-gray-200 px-4 py-4 text-center">
-                                <span
-                                    class="bg-green-100 border border-green-300 text-green-700 px-2 py-1 rounded text-[10px] font-bold uppercase shadow-sm">SOLUCIONADO</span>
-                            </td>
-                            <td class="border border-gray-200 px-4 py-4 text-center">
-                                <span class="text-gray-400 italic text-xs">Terminado</span>
-                            </td>
-                        </tr>
+                    <tbody id="tablaTicketsSoporte">
+                        <!-- Cargado dinámicamente mediante javascript -->
                     </tbody>
                 </table>
             </div>
         </div>
+
+
+        <script defer>
+            const tablaTickets = document.querySelector('#tablaTicketsSoporte');
+            const categoriaSoporte = `<%= user.categoriaAsignada || '' %>`;
+
+            function cargarTickets() {
+                fetch('/verTickets')
+                    .then(response => response.json())
+                    .then(tickets => {
+
+                        tablaTickets.innerHTML = '';
+
+                        const ticketsFiltrados = tickets.filter(ticket =>
+                            ticket.nombre.trim().toLowerCase() === categoriaSoporte.trim().toLowerCase()
+                        );
+
+                        if (ticketsFiltrados.length === 0) {
+                            tablaTickets.innerHTML = `
+                                <tr>
+                                    <td colspan="7" class="border border-gray-200 px-4 py-8 text-center text-gray-500 italic">
+                                        No hay tickets asignados a tu categoría (${categoriaSoporte || 'Sin categoría'})
+                                    </td>
+                                </tr>
+                            `;
+                            return;
+                        }
+
+                        ticketsFiltrados.forEach(ticket => {
+                            const tr = document.createElement('tr');
+                            const fecha = new Date(ticket.fecha_creacion).toLocaleDateString('es-ES');
+
+                            const estado = ticket.fecha_cierre ?
+                                `<span class="bg-green-100 border border-green-300 text-green-700 px-2 py-1 rounded text-[10px] font-bold uppercase shadow-sm">SOLUCIONADO</span>` :
+                                `<span class="bg-yellow-100 border border-yellow-300 text-yellow-700 px-2 py-1 rounded text-[10px] font-bold uppercase shadow-sm">ABIERTO</span>`;
+
+                            const accion = ticket.fecha_cierre ?
+                                `<span class="text-gray-400 italic text-xs">Terminado</span>` :
+                                `<span class="text-gray-500 italic text-xs">En espera</span>`;
+
+                            tr.innerHTML = `
+                                <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800 text-xs">t-${ticket.id}</td>
+                                <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">${fecha}</td>
+                                <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800 text-xs">${ticket.usuario}</td>
+                                <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs">${ticket.nombre}</td>
+                                <td class="border border-gray-200 px-4 py-4 text-gray-800 text-xs">${ticket.descripcion}</td>
+                                <td class="border border-gray-200 px-4 py-4 text-center">${estado}</td>
+                                <td class="border border-gray-200 px-4 py-4 text-center">${accion}</td>
+                            `;
+                            tablaTickets.appendChild(tr);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error al cargar tickets:', error);
+                        tablaTickets.innerHTML = `
+                            <tr>
+                                <td colspan="7" class="border border-gray-200 px-4 py-8 text-center text-red-500 italic">
+                                    Error al cargar los tickets. Por favor, intenta de nuevo más tarde.
+                                </td>
+                            </tr>
+                        `;
+                    });
+            }
+
+            cargarTickets();
+        </script>
 
     </body>
 

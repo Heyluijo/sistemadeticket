@@ -31,6 +31,5 @@ app.use('/', apiRouter);
 
 
 app.listen(PORT, () => {
-    console.log(`App corriendo en el puerto ${PORT}`);
     console.log(`TickeIT : http://localhost:${PORT}`);
 });

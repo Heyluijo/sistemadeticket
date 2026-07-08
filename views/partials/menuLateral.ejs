@@ -5,9 +5,7 @@
     </div>
 
     <div class="m-4 p-3 rounded">
-
-        <%- include('../components/menuAdmin.ejs', { activeTab: 'categorias' }) %>
-
+        <%- include('../components/menuAdmin.ejs', { activeTab: locals.activeTab || '' }) %>
     </div>
 
     <div class="p-4 mb-4">
