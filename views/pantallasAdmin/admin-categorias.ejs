@@ -10,153 +10,83 @@
 
 <body class="bg-gray-100 flex h-screen font-sans">
 
-    <div class="w-64 bg-slate-800 text-white flex flex-col">
-        <div class="p-4 mt-2">
-            <h1 class="text-xl font-bold text-blue-400">IT Tickets</h1>
-            <p class="text-xs text-gray-400">Tarea de Soporte Técnico</p>
-        </div>
+    <%- include('../partials/menuLateral.ejs') %>
 
-        <div class="m-4 p-3 rounded">
-
-            <%- include('../components/menuAdmin.ejs', { activeTab: 'categorias' }) %>
-
-        </div>
-
-        <div class="p-4 mb-4">
-            <%- include('../components/btnLogout.ejs') %>
-        </div>
-    </div>
-
-    <div class="flex-1 p-8 overflow-y-auto">
-        <div class="flex justify-between items-center mb-8 border-b border-gray-300 pb-4">
-            <div>
-                <h2 class="text-3xl font-bold text-gray-800 mb-1">Administrar Categorías</h2>
-                <p class="text-gray-500 text-sm">Configura clasificaciones y enlaces automáticos a técnicos</p>
-            </div>
-            <button
-                class="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded shadow font-bold flex items-center">
-                <span class="mr-2 text-lg">+</span> Nueva Categoría
-            </button>
-        </div>
-
-        <div class="bg-white p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
-            <div class="flex items-center mb-6">
-                <span class="text-xl mr-2">🏷️</span>
-                <h3 class="text-lg font-bold text-gray-800">Listado de Categorías</h3>
+        <div class="flex-1 p-8 overflow-y-auto">
+            <div class="flex justify-between items-center mb-8 border-b border-gray-300 pb-4">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-1">Administrar Categorías</h2>
+                    <p class="text-gray-500 text-sm">Configura clasificaciones y enlaces automáticos a técnicos</p>
+                </div>
+                <button
+                    class="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded shadow font-bold flex items-center">
+                    <span class="mr-2 text-lg">+</span> Nueva Categoría
+                </button>
             </div>
 
-            <table class="w-full border-collapse border border-gray-100 text-sm text-left">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">NOMBRE
-                        </th>
-                        <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
-                            DESCRIPCIÓN</th>
-                        <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">TÉCNICO
-                            AUTOMÁTICO</th>
-                        <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">REGISTRO
-                        </th>
-                        <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">ACCIONES
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold w-48">Redes y
-                            Telecomunicaciones</td>
-                        <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">Problemas de conexión a
-                            internet, wifi, cables, switches o accesos a carpetas de red.</td>
-                        <td class="border border-gray-200 px-4 py-4 text-green-700 font-bold text-xs">
-                            👤 Juan Soporte<br>(Redes)
-                        </td>
-                        <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">15/6/2026</td>
-                        <td class="border border-gray-200 px-4 py-4">
-                            <div class="flex flex-col space-y-2 w-20">
-                                <button
-                                    class="bg-yellow-500 hover:bg-yellow-600 text-white text-xs px-2 py-1 rounded flex items-center justify-center font-bold shadow">
-                                    <span class="mr-1 text-sm">✏️</span> Editar
-                                </button>
-                                <button
-                                    class="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded flex items-center justify-center font-bold shadow">
-                                    <span class="mr-1 text-sm">🗑️</span> Borrar
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+            <div class="bg-white p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
+                <div class="flex items-center mb-6">
+                    <span class="text-xl mr-2">🏷️</span>
+                    <h3 class="text-lg font-bold text-gray-800">Listado de Categorías</h3>
+                </div>
 
-                    <tr>
-                        <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold w-48">Hardware y Periféricos
-                        </td>
-                        <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">Problemas con computadoras
-                            físicas, monitores, teclados, mouse, impresoras o escáneres.</td>
-                        <td class="border border-gray-200 px-4 py-4 text-green-700 font-bold text-xs">
-                            👤 Juan Soporte<br>(Redes)
-                        </td>
-                        <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">15/6/2026</td>
-                        <td class="border border-gray-200 px-4 py-4">
-                            <div class="flex flex-col space-y-2 w-20">
-                                <button
-                                    class="bg-yellow-500 hover:bg-yellow-600 text-white text-xs px-2 py-1 rounded flex items-center justify-center font-bold shadow">
-                                    <span class="mr-1 text-sm">✏️</span> Editar
-                                </button>
-                                <button
-                                    class="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded flex items-center justify-center font-bold shadow">
-                                    <span class="mr-1 text-sm">🗑️</span> Borrar
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                <table class="w-full border-collapse border border-gray-100 text-sm text-left">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
+                                NOMBRE
+                            </th>
+                            <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
+                                DESCRIPCIÓN</th>
+                            <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
+                                TÉCNICO
+                                AUTOMÁTICO</th>
+                            <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
+                                REGISTRO
+                            </th>
+                            <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
+                                ACCIONES
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="listadoCategorias">
 
-                    <tr>
-                        <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold w-48">Software y
-                            Aplicaciones</td>
-                        <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">Problemas con sistemas
-                            operativos, Office, programas corporativos, errores de software o virus.</td>
-                        <td class="border border-gray-200 px-4 py-4 text-green-700 font-bold text-xs">
-                            👤 Maria Soporte<br>(Software)
-                        </td>
-                        <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">15/6/2026</td>
-                        <td class="border border-gray-200 px-4 py-4">
-                            <div class="flex flex-col space-y-2 w-20">
-                                <button
-                                    class="bg-yellow-500 hover:bg-yellow-600 text-white text-xs px-2 py-1 rounded flex items-center justify-center font-bold shadow">
-                                    <span class="mr-1 text-sm">✏️</span> Editar
-                                </button>
-                                <button
-                                    class="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded flex items-center justify-center font-bold shadow">
-                                    <span class="mr-1 text-sm">🗑️</span> Borrar
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold w-48">Otros / Consultas
-                            Generales</td>
-                        <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">Cualquier otra solicitud o
-                            consulta que no encaje en las categorías anteriores. Requiere asignación manual.</td>
-                        <td class="border border-gray-200 px-4 py-4 text-gray-400 italic text-xs">
-                            Asignación manual
-                        </td>
-                        <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">15/6/2026</td>
-                        <td class="border border-gray-200 px-4 py-4">
-                            <div class="flex flex-col space-y-2 w-20">
-                                <button
-                                    class="bg-yellow-500 hover:bg-yellow-600 text-white text-xs px-2 py-1 rounded flex items-center justify-center font-bold shadow">
-                                    <span class="mr-1 text-sm">✏️</span> Editar
-                                </button>
-                                <button
-                                    class="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded flex items-center justify-center font-bold shadow">
-                                    <span class="mr-1 text-sm">🗑️</span> Borrar
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
+        <script>
+            const listadoCategorias = document.querySelector('#listadoCategorias');
 
+            fetch('/verCategorias')
+                .then(response => response.json())
+                .then(categorias => {
+                    listadoCategorias.innerHTML = '';
+                    categorias.forEach(categoria => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold w-48">${categoria.nombreCategoria}</td>
+                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">${categoria.descripcion}</td>
+                            <td class="border border-gray-200 px-4 py-4 text-green-700 font-bold text-xs">${categoria.tecnicoAsignado}</td>
+                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">N/A</td>
+                            <td class="border border-gray-200 px-4 py-4">
+                                <div class="flex flex-col space-y-2 w-20">
+                                    <button
+                                        class="bg-yellow-500 hover:bg-yellow-600 text-white text-xs px-2 py-1 rounded flex items-center justify-center font-bold shadow">
+                                        <span class="mr-1 text-sm">✏️</span> Editar
+                                    </button>
+                                    <button
+                                        class="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded flex items-center justify-center font-bold shadow">
+                                        <span class="mr-1 text-sm">🗑️</span> Borrar
+                                    </button>
+                                </div>
+                            </td>
+                        `;
+                        listadoCategorias.appendChild(tr);
+                    });
+                })
+                .catch(err => console.error('Error al cargar categorías:', err));
+        </script>
 </body>
 
 </html>

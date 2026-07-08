@@ -10,218 +10,214 @@
 
 <body class="bg-gray-100 flex h-screen font-sans">
 
-    <div class="w-64 bg-slate-800 text-white flex flex-col">
-        <div class="p-4 mt-2">
-            <h1 class="text-xl font-bold text-blue-400">IT Tickets</h1>
-            <p class="text-xs text-gray-400">Tarea de Soporte Técnico</p>
-        </div>
+    <%- include('../partials/menuLateral.ejs') %>
 
-        <div class="m-4 p-3 rounded">
-
-            <%- include('../components/menuAdmin.ejs', { activeTab: 'tickets' }) %>
-        </div>
-
-        <div class="p-4 mb-4">
-            <%- include('../components/btnLogout.ejs') %>
-        </div>
-    </div>
-
-    <div class="flex-1 p-8 overflow-y-auto">
-        <div class="mb-8 border-b border-gray-300 pb-4">
-            <h2 class="text-3xl font-bold text-gray-800 mb-1">Administrar Tickets</h2>
-            <p class="text-gray-500 text-sm">Ver historial completo de soporte, cambiar estados y asignar soporte</p>
-        </div>
-
-        <div class="bg-white p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
-            <div class="flex items-center mb-6">
-                <span class="text-xl mr-2">🎫</span>
-                <h3 class="text-lg font-bold text-gray-800">Historial Global</h3>
+        <div class="flex-1 p-8 overflow-y-auto">
+            <div class="mb-8 border-b border-gray-300 pb-4">
+                <h2 class="text-3xl font-bold text-gray-800 mb-1">Administrar Tickets</h2>
+                <p class="text-gray-500 text-sm">Ver historial completo de soporte, cambiar estados y asignar soporte
+                </p>
             </div>
 
-            <table class="w-full border-collapse border border-gray-100 text-sm text-left">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">ID</th>
-                        <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">FECHA
-                        </th>
-                        <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">USUARIO
-                        </th>
-                        <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">CATEGORÍA
-                        </th>
-                        <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
-                            DESCRIPCIÓN</th>
-                        <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">SOPORTE
-                            TÉCNICO</th>
-                        <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">ESTADO
-                        </th>
-                        <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">ACCIONES
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800">t-<br>42uchk</td>
-                        <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">17/6/2026</td>
-                        <td class="border border-gray-200 px-4 py-4">
-                            <p class="font-bold text-gray-800 text-xs">Pedro Usuario</p>
-                            <p class="text-gray-400 text-xs">user1@tickets.com</p>
-                        </td>
-                        <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs">Hardware y
-                            Periféricos</td>
-                        <td class="border border-gray-200 px-4 py-4 text-gray-800 text-xs font-bold">NO FUNCIONA ...
-                        </td>
-                        <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">
-                            👤 Juan Soporte<br>(Redes)
-                        </td>
-                        <td class="border border-gray-200 px-4 py-4">
-                            <span
-                                class="bg-yellow-100 border border-yellow-300 text-yellow-700 px-2 py-1 rounded text-xs font-bold uppercase shadow-sm">ABIERTO</span>
-                        </td>
-                        <td class="border border-gray-200 px-4 py-4">
-                            <div class="flex flex-col space-y-1 w-16">
-                                <button
-                                    class="bg-yellow-500 hover:bg-yellow-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
-                                    <span class="mr-1">✏️</span> Editar
-                                </button>
-                                <button
-                                    class="bg-red-500 hover:bg-red-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
-                                    <span class="mr-1">🗑️</span> Borrar
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+            <div class="bg-white p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
+                <div class="flex items-center mb-6">
+                    <span class="text-xl mr-2">🎫</span>
+                    <h3 class="text-lg font-bold text-gray-800">Historial Global</h3>
+                </div>
 
-                    <tr>
-                        <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800">t-<br>zgd376</td>
-                        <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">16/6/2026</td>
-                        <td class="border border-gray-200 px-4 py-4">
-                            <p class="font-bold text-gray-800 text-xs">Pedro Usuario</p>
-                            <p class="text-gray-400 text-xs">user1@tickets.com</p>
-                        </td>
-                        <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs">Software
-                            y<br>Aplicaciones</td>
-                        <td class="border border-gray-200 px-4 py-4 text-gray-800 text-xs font-bold">No funciona offi...
-                        </td>
-                        <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">
-                            👤 Maria Soporte<br>(Software)
-                        </td>
-                        <td class="border border-gray-200 px-4 py-4">
-                            <span
-                                class="bg-yellow-100 border border-yellow-300 text-yellow-700 px-2 py-1 rounded text-xs font-bold uppercase shadow-sm">ABIERTO</span>
-                        </td>
-                        <td class="border border-gray-200 px-4 py-4">
-                            <div class="flex flex-col space-y-1 w-16">
-                                <button
-                                    class="bg-yellow-500 hover:bg-yellow-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
-                                    <span class="mr-1">✏️</span> Editar
-                                </button>
-                                <button
-                                    class="bg-red-500 hover:bg-red-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
-                                    <span class="mr-1">🗑️</span> Borrar
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                <table class="w-full border-collapse border border-gray-100 text-sm text-left">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">ID
+                            </th>
+                            <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">FECHA
+                            </th>
+                            <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
+                                USUARIO
+                            </th>
+                            <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
+                                CATEGORÍA
+                            </th>
+                            <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
+                                DESCRIPCIÓN</th>
+                            <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
+                                SOPORTE
+                                TÉCNICO</th>
+                            <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
+                                ESTADO
+                            </th>
+                            <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
+                                ACCIONES
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800">t-<br>42uchk</td>
+                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">17/6/2026</td>
+                            <td class="border border-gray-200 px-4 py-4">
+                                <p class="font-bold text-gray-800 text-xs">Pedro Usuario</p>
+                                <p class="text-gray-400 text-xs">user1@tickets.com</p>
+                            </td>
+                            <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs">Hardware y
+                                Periféricos</td>
+                            <td class="border border-gray-200 px-4 py-4 text-gray-800 text-xs font-bold">NO FUNCIONA ...
+                            </td>
+                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">
+                                👤 Juan Soporte<br>(Redes)
+                            </td>
+                            <td class="border border-gray-200 px-4 py-4">
+                                <span
+                                    class="bg-yellow-100 border border-yellow-300 text-yellow-700 px-2 py-1 rounded text-xs font-bold uppercase shadow-sm">ABIERTO</span>
+                            </td>
+                            <td class="border border-gray-200 px-4 py-4">
+                                <div class="flex flex-col space-y-1 w-16">
+                                    <button
+                                        class="bg-yellow-500 hover:bg-yellow-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
+                                        <span class="mr-1">✏️</span> Editar
+                                    </button>
+                                    <button
+                                        class="bg-red-500 hover:bg-red-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
+                                        <span class="mr-1">🗑️</span> Borrar
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
 
-                    <tr>
-                        <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800">t-3</td>
-                        <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">16/6/2026</td>
-                        <td class="border border-gray-200 px-4 py-4">
-                            <p class="font-bold text-gray-800 text-xs">Pedro Usuario</p>
-                            <p class="text-gray-400 text-xs">user1@tickets.com</p>
-                        </td>
-                        <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs">Otros /
-                            Consultas<br>Generales</td>
-                        <td class="border border-gray-200 px-4 py-4 text-gray-800 text-xs font-bold">Solicitud de
-                            inst...</td>
-                        <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">
-                            👤 Juan Soporte<br>(Redes)
-                        </td>
-                        <td class="border border-gray-200 px-4 py-4">
-                            <span
-                                class="bg-yellow-100 border border-yellow-300 text-yellow-700 px-2 py-1 rounded text-xs font-bold uppercase shadow-sm">ABIERTO</span>
-                        </td>
-                        <td class="border border-gray-200 px-4 py-4">
-                            <div class="flex flex-col space-y-1 w-16">
-                                <button
-                                    class="bg-yellow-500 hover:bg-yellow-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
-                                    <span class="mr-1">✏️</span> Editar
-                                </button>
-                                <button
-                                    class="bg-red-500 hover:bg-red-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
-                                    <span class="mr-1">🗑️</span> Borrar
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800">t-<br>zgd376</td>
+                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">16/6/2026</td>
+                            <td class="border border-gray-200 px-4 py-4">
+                                <p class="font-bold text-gray-800 text-xs">Pedro Usuario</p>
+                                <p class="text-gray-400 text-xs">user1@tickets.com</p>
+                            </td>
+                            <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs">Software
+                                y<br>Aplicaciones</td>
+                            <td class="border border-gray-200 px-4 py-4 text-gray-800 text-xs font-bold">No funciona
+                                offi...
+                            </td>
+                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">
+                                👤 Maria Soporte<br>(Software)
+                            </td>
+                            <td class="border border-gray-200 px-4 py-4">
+                                <span
+                                    class="bg-yellow-100 border border-yellow-300 text-yellow-700 px-2 py-1 rounded text-xs font-bold uppercase shadow-sm">ABIERTO</span>
+                            </td>
+                            <td class="border border-gray-200 px-4 py-4">
+                                <div class="flex flex-col space-y-1 w-16">
+                                    <button
+                                        class="bg-yellow-500 hover:bg-yellow-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
+                                        <span class="mr-1">✏️</span> Editar
+                                    </button>
+                                    <button
+                                        class="bg-red-500 hover:bg-red-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
+                                        <span class="mr-1">🗑️</span> Borrar
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
 
-                    <tr>
-                        <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800">t-1</td>
-                        <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">15/6/2026</td>
-                        <td class="border border-gray-200 px-4 py-4">
-                            <p class="font-bold text-gray-800 text-xs">Pedro Usuario</p>
-                            <p class="text-gray-400 text-xs">user1@tickets.com</p>
-                        </td>
-                        <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs">Redes
-                            y<br>Telecomunicaciones</td>
-                        <td class="border border-gray-200 px-4 py-4 text-gray-800 text-xs font-bold">No tengo acces...
-                        </td>
-                        <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">
-                            👤 Juan Soporte<br>(Redes)
-                        </td>
-                        <td class="border border-gray-200 px-4 py-4">
-                            <span
-                                class="bg-green-100 border border-green-300 text-green-700 px-2 py-1 rounded text-xs font-bold uppercase shadow-sm">SOLUCIONADO</span>
-                        </td>
-                        <td class="border border-gray-200 px-4 py-4">
-                            <div class="flex flex-col space-y-1 w-16">
-                                <button
-                                    class="bg-yellow-500 hover:bg-yellow-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
-                                    <span class="mr-1">✏️</span> Editar
-                                </button>
-                                <button
-                                    class="bg-red-500 hover:bg-red-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
-                                    <span class="mr-1">🗑️</span> Borrar
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800">t-3</td>
+                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">16/6/2026</td>
+                            <td class="border border-gray-200 px-4 py-4">
+                                <p class="font-bold text-gray-800 text-xs">Pedro Usuario</p>
+                                <p class="text-gray-400 text-xs">user1@tickets.com</p>
+                            </td>
+                            <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs">Otros /
+                                Consultas<br>Generales</td>
+                            <td class="border border-gray-200 px-4 py-4 text-gray-800 text-xs font-bold">Solicitud de
+                                inst...</td>
+                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">
+                                👤 Juan Soporte<br>(Redes)
+                            </td>
+                            <td class="border border-gray-200 px-4 py-4">
+                                <span
+                                    class="bg-yellow-100 border border-yellow-300 text-yellow-700 px-2 py-1 rounded text-xs font-bold uppercase shadow-sm">ABIERTO</span>
+                            </td>
+                            <td class="border border-gray-200 px-4 py-4">
+                                <div class="flex flex-col space-y-1 w-16">
+                                    <button
+                                        class="bg-yellow-500 hover:bg-yellow-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
+                                        <span class="mr-1">✏️</span> Editar
+                                    </button>
+                                    <button
+                                        class="bg-red-500 hover:bg-red-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
+                                        <span class="mr-1">🗑️</span> Borrar
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
 
-                    <tr>
-                        <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800">t-2</td>
-                        <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">14/6/2026</td>
-                        <td class="border border-gray-200 px-4 py-4">
-                            <p class="font-bold text-gray-800 text-xs">Ana Usuario</p>
-                            <p class="text-gray-400 text-xs">user2@tickets.com</p>
-                        </td>
-                        <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs">Software
-                            y<br>Aplicaciones</td>
-                        <td class="border border-gray-200 px-4 py-4 text-gray-800 text-xs font-bold">El programa Exc...
-                        </td>
-                        <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">
-                            👤 Maria Soporte<br>(Software)
-                        </td>
-                        <td class="border border-gray-200 px-4 py-4">
-                            <span
-                                class="bg-green-100 border border-green-300 text-green-700 px-2 py-1 rounded text-xs font-bold uppercase shadow-sm">SOLUCIONADO</span>
-                        </td>
-                        <td class="border border-gray-200 px-4 py-4">
-                            <div class="flex flex-col space-y-1 w-16">
-                                <button
-                                    class="bg-yellow-500 hover:bg-yellow-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
-                                    <span class="mr-1">✏️</span> Editar
-                                </button>
-                                <button
-                                    class="bg-red-500 hover:bg-red-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
-                                    <span class="mr-1">🗑️</span> Borrar
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                        <tr>
+                            <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800">t-1</td>
+                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">15/6/2026</td>
+                            <td class="border border-gray-200 px-4 py-4">
+                                <p class="font-bold text-gray-800 text-xs">Pedro Usuario</p>
+                                <p class="text-gray-400 text-xs">user1@tickets.com</p>
+                            </td>
+                            <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs">Redes
+                                y<br>Telecomunicaciones</td>
+                            <td class="border border-gray-200 px-4 py-4 text-gray-800 text-xs font-bold">No tengo
+                                acces...
+                            </td>
+                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">
+                                👤 Juan Soporte<br>(Redes)
+                            </td>
+                            <td class="border border-gray-200 px-4 py-4">
+                                <span
+                                    class="bg-green-100 border border-green-300 text-green-700 px-2 py-1 rounded text-xs font-bold uppercase shadow-sm">SOLUCIONADO</span>
+                            </td>
+                            <td class="border border-gray-200 px-4 py-4">
+                                <div class="flex flex-col space-y-1 w-16">
+                                    <button
+                                        class="bg-yellow-500 hover:bg-yellow-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
+                                        <span class="mr-1">✏️</span> Editar
+                                    </button>
+                                    <button
+                                        class="bg-red-500 hover:bg-red-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
+                                        <span class="mr-1">🗑️</span> Borrar
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800">t-2</td>
+                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">14/6/2026</td>
+                            <td class="border border-gray-200 px-4 py-4">
+                                <p class="font-bold text-gray-800 text-xs">Ana Usuario</p>
+                                <p class="text-gray-400 text-xs">user2@tickets.com</p>
+                            </td>
+                            <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs">Software
+                                y<br>Aplicaciones</td>
+                            <td class="border border-gray-200 px-4 py-4 text-gray-800 text-xs font-bold">El programa
+                                Exc...
+                            </td>
+                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">
+                                👤 Maria Soporte<br>(Software)
+                            </td>
+                            <td class="border border-gray-200 px-4 py-4">
+                                <span
+                                    class="bg-green-100 border border-green-300 text-green-700 px-2 py-1 rounded text-xs font-bold uppercase shadow-sm">SOLUCIONADO</span>
+                            </td>
+                            <td class="border border-gray-200 px-4 py-4">
+                                <div class="flex flex-col space-y-1 w-16">
+                                    <button
+                                        class="bg-yellow-500 hover:bg-yellow-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
+                                        <span class="mr-1">✏️</span> Editar
+                                    </button>
+                                    <button
+                                        class="bg-red-500 hover:bg-red-600 text-white text-[10px] px-1 py-1 rounded flex items-center justify-center font-bold shadow">
+                                        <span class="mr-1">🗑️</span> Borrar
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
 
 </body>
 

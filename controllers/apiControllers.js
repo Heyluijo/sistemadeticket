@@ -1,7 +1,7 @@
 import { RepositorioUsuario } from '../models/users.js';
 import ticketRepositorio from '../models/tickets.js';
 import jwt from "jsonwebtoken";
-import { ejecutarConsulta } from '../database/db.js';
+import categoriaRepositorio from '../models/categorias.js';
 
 //LOGIN
 export const login = (req, res) => {
@@ -97,11 +97,11 @@ export const loginPost = async (req, res) => {
 
         console.log('resultado de la consulta', result)
 
-        if (result.rol === 'admin') {
+        if (result.rol === 'Admin') {
             res.redirect('/admin')
-        } else if (result.rol === 'soporte') {
+        } else if (result.rol === 'Soporte') {
             res.redirect('/soporte')
-        } else if (result.rol === 'gerente') {
+        } else if (result.rol === 'Gerente') {
             res.redirect('/gerente')
         } else {
             res.redirect('/gestionDeTicket')
@@ -150,7 +150,6 @@ export const crearTicketPost = async (req, res) => {
     try {
         const { nombre, descripcion, tecnico_automatico, id_tecnico, usuario_id, usuario } = req.body
         const result = await ticketRepositorio.crearTicket(nombre, descripcion, tecnico_automatico, id_tecnico, usuario_id, usuario)
-        console.log('resultado de la consulta', result)
 
         if (typeof result === 'string') {
             return res.render('register.ejs', { error: result })
@@ -170,7 +169,6 @@ export const crearTicketPost = async (req, res) => {
 export const verTicketsGet = async (req, res) => {
     try {
         const result = await ticketRepositorio.verTickets()
-        console.log('resultado de la consulta', result)
 
         if (typeof result === 'string') {
             return res.render('register.ejs', { error: result })
@@ -183,3 +181,25 @@ export const verTicketsGet = async (req, res) => {
         res.status(401).json({ message: 'Error interno del servidor' })
     }
 }
+
+export const verCategorias = async (req, res) => {
+
+    try {
+        console.log('Se solicito las categorias')
+        const result = await categoriaRepositorio.getCategorias()
+
+        if (typeof result === 'string') {
+            return res.render('register.ejs', { error: result })
+        }
+
+        res.status(200).json(result)
+
+    } catch (error) {
+        console.error('Error en verCategorias:', error)
+        res.status(401).json({ message: 'Error interno del servidor' })
+    }
+}
+
+
+
+

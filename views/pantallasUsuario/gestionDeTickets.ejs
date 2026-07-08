@@ -40,7 +40,8 @@
 
                     <div class="mb-4">
                         <label class="block text-sm font-bold text-gray-800 mb-2">Seleccione una Categoría</label>
-                        <select class="w-full border border-gray-300 p-2 rounded text-sm text-gray-700">
+                        <select class="w-full border border-gray-300 p-2 rounded text-sm text-gray-700"
+                            id="selectCategory">
                             <option>-- Elige una opción --</option>
                         </select>
                     </div>
@@ -49,11 +50,12 @@
                         <label class="block text-sm font-bold text-gray-800 mb-2">¿Cuál es el problema?</label>
                         <textarea
                             class="w-full border border-gray-300 p-2 rounded text-sm text-gray-700 h-32 resize-none"
-                            placeholder="Escribe aquí los detalles del problema..."></textarea>
+                            placeholder="Escribe aquí los detalles del problema..." id="descripcionTicket"></textarea>
                     </div>
 
                     <button
-                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded w-full flex items-center justify-center">
+                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded w-full flex items-center justify-center"
+                        id="btnCrearTicket">
                         <span class="mr-2">📤</span> Enviar Reporte
                     </button>
                 </div>
@@ -88,71 +90,7 @@
                                         ESTADO</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800 text-xs">
-                                        t-<br>42uchk</td>
-                                    <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">17/6/2026</td>
-                                    <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs w-32">
-                                        Hardware y Periféricos</td>
-                                    <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">NO FUNCIONA LA
-                                        IMPR...</td>
-                                    <td class="border border-gray-200 px-4 py-4 text-gray-500 text-[10px]">Juan
-                                        Soporte<br>(Redes)</td>
-                                    <td class="border border-gray-200 px-4 py-4">
-                                        <span
-                                            class="bg-yellow-100 border border-yellow-300 text-yellow-700 px-2 py-1 rounded text-[10px] font-bold uppercase shadow-sm">ABIERTO</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800 text-xs">
-                                        t-<br>zgd376</td>
-                                    <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">16/6/2026</td>
-                                    <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs w-32">
-                                        Software y Aplicaciones</td>
-                                    <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">No funciona
-                                        office
-                                    </td>
-                                    <td class="border border-gray-200 px-4 py-4 text-gray-500 text-[10px]">
-                                        Maria<br>Soporte<br>(Software)</td>
-                                    <td class="border border-gray-200 px-4 py-4">
-                                        <span
-                                            class="bg-yellow-100 border border-yellow-300 text-yellow-700 px-2 py-1 rounded text-[10px] font-bold uppercase shadow-sm">ABIERTO</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800 text-xs">t-3
-                                    </td>
-                                    <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">16/6/2026</td>
-                                    <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs w-32">
-                                        Otros
-                                        / Consultas Generales</td>
-                                    <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">Solicitud de
-                                        instalación ...</td>
-                                    <td class="border border-gray-200 px-4 py-4 text-gray-500 text-[10px]">Juan
-                                        Soporte<br>(Redes)</td>
-                                    <td class="border border-gray-200 px-4 py-4">
-                                        <span
-                                            class="bg-yellow-100 border border-yellow-300 text-yellow-700 px-2 py-1 rounded text-[10px] font-bold uppercase shadow-sm">ABIERTO</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800 text-xs">t-1
-                                    </td>
-                                    <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">15/6/2026</td>
-                                    <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs w-32">
-                                        Redes
-                                        y Telecomunicaciones</td>
-                                    <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">No tengo acceso a
-                                        la
-                                        ca...</td>
-                                    <td class="border border-gray-200 px-4 py-4 text-gray-500 text-[10px]">Juan
-                                        Soporte<br>(Redes)</td>
-                                    <td class="border border-gray-200 px-4 py-4">
-                                        <span
-                                            class="bg-green-100 border border-green-300 text-green-700 px-2 py-1 rounded text-[10px] font-bold uppercase shadow-sm">SOLUCIONADO</span>
-                                    </td>
-                                </tr>
+                            <tbody id="tablaTickets">
                             </tbody>
                         </table>
                     </div>
@@ -161,6 +99,129 @@
             </div>
         </div>
 
+
+        <script defer>
+
+
+
+            /*
+             Datos que debe tener la peticion para escribir un ticket
+             {
+              "nombre": "Falla en conexión a internet",
+              "descripcion": "El usuario reporta que no tiene acceso a internet en su estación de trabajo desde hace más de 2 horas.",
+              "tecnico_automatico": true,
+              "id_tecnico": 4,
+              "usuario_id": 10,
+              "usuario": "carla_admin"
+             }
+             */
+
+            const selectCategory = document.querySelector('#selectCategory');
+            fetch('/verCategorias')
+                .then(response => response.json())
+                .then(data => {
+                    selectCategory.innerHTML = '<option value="">-- Elige una opción --</option>';
+                    data.forEach(categoria => {
+                        const option = document.createElement('option');
+                        option.value = categoria.id;
+                        option.textContent = categoria.nombreCategoria;
+                        selectCategory.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error al cargar categorías:', error));
+
+            const btnCrearTicket = document.querySelector('#btnCrearTicket');
+            const tablaTickets = document.querySelector('#tablaTickets');
+            const usuario_id = "<%= user.id %>";
+            const usuario = "<%= user.usuario %>";
+
+            // Cargar Tickets del Usuario
+            function cargarTickets() {
+                fetch('/verTickets')
+                    .then(response => response.json())
+                    .then(tickets => {
+                        tablaTickets.innerHTML = '';
+                        // Filtrar para mostrar solo los de este usuario
+                        const misTickets = tickets.filter(t => t.usuario_id == usuario_id);
+                        
+                        misTickets.forEach(ticket => {
+                            const tr = document.createElement('tr');
+                            const fecha = new Date(ticket.fecha_creacion).toLocaleDateString('es-ES');
+                            const tecnico = ticket.tecnico_asignado_id ? `Técnico #${ticket.tecnico_asignado_id}` : 'Asignación manual';
+                            
+                            const estado = ticket.fecha_cierre ? 
+                                `<span class="bg-green-100 border border-green-300 text-green-700 px-2 py-1 rounded text-[10px] font-bold uppercase shadow-sm">SOLUCIONADO</span>` :
+                                `<span class="bg-yellow-100 border border-yellow-300 text-yellow-700 px-2 py-1 rounded text-[10px] font-bold uppercase shadow-sm">ABIERTO</span>`;
+
+                            tr.innerHTML = `
+                                <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800 text-xs">t-${ticket.id}</td>
+                                <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">${fecha}</td>
+                                <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs w-32">${ticket.nombre}</td>
+                                <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">${ticket.descripcion}</td>
+                                <td class="border border-gray-200 px-4 py-4 text-gray-500 text-[10px]">${tecnico}</td>
+                                <td class="border border-gray-200 px-4 py-4">${estado}</td>
+                            `;
+                            tablaTickets.appendChild(tr);
+                        });
+                    })
+                    .catch(error => console.error('Error al cargar tickets:', error));
+            }
+
+            // Crear Nuevo Ticket
+            function crearTicket() {
+                const descripcionTicket = document.querySelector('#descripcionTicket').value;
+                
+                if (!selectCategory.value) {
+                    alert('Por favor, selecciona una categoría.');
+                    return;
+                }
+                if (!descripcionTicket.trim()) {
+                    alert('Por favor, describe el problema.');
+                    return;
+                }
+
+                // Guardamos el texto de la categoría como "nombre"
+                const nombreCategoria = selectCategory.options[selectCategory.selectedIndex].text;
+
+                fetch('/crearTicket', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        nombre: nombreCategoria,
+                        descripcion: descripcionTicket,
+                        tecnico_automatico: false,
+                        id_tecnico: null,
+                        usuario_id: Number(usuario_id),
+                        usuario: usuario,
+                    }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message === "ticket Creado") {
+                            alert('¡Ticket enviado correctamente!');
+                            // Limpiar campos
+                            document.querySelector('#descripcionTicket').value = '';
+                            selectCategory.value = '';
+                            // Recargar tabla de tickets
+                            cargarTickets();
+                        } else {
+                            alert('Error al crear el ticket: ' + (data.message || 'Error desconocido'));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Ocurrió un error al enviar el ticket.');
+                    });
+            }
+
+            btnCrearTicket.addEventListener('click', crearTicket);
+
+            // Cargar inicial de tickets
+            cargarTickets();
+
+        </script>
     </body>
 
     </html>

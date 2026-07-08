@@ -1,4 +1,4 @@
-import { ejecutarConsulta } from '../database/db.js';
+import { ejecutarConsultaNeon } from '../database/dbNeon.js';
 
 export const rolesAutorizados = (...rolesPermitidos) => {
     return (req, res, next) => {
@@ -21,7 +21,7 @@ export const verificarRolEnBD = (...rolesPermitidos) => {
 
         try {
             const query = 'SELECT rol FROM usuarios WHERE id = $1';
-            const resultados = await ejecutarConsulta(query, [req.user.id]);
+            const resultados = await ejecutarConsultaNeon(query, [req.user.id]);
 
             if (resultados.length === 0) {
                 return res.status(404).json({ message: 'Usuario no encontrado.' });

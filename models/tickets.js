@@ -1,4 +1,4 @@
-import { ejecutarConsulta } from "../database/db.js";
+import { ejecutarConsultaNeon } from "../database/dbNeon.js";
 
 class ticketRepositorio {
 
@@ -7,7 +7,7 @@ class ticketRepositorio {
         const fecha_creacion = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
         const query = `
-        INSERT INTO tickets_it (
+        INSERT INTO tickets (
             nombre,
             descripcion,
             tecnico_automatico,
@@ -28,7 +28,7 @@ class ticketRepositorio {
             NULL
         ) RETURNING *;
         `;
-        return await ejecutarConsulta(query, [
+        return await ejecutarConsultaNeon(query, [
             nombre,
             descripcion,
             tecnico_automatico,
@@ -44,9 +44,9 @@ class ticketRepositorio {
         SELECT 
         * 
         FROM 
-        tickets_it
+        tickets
         `
-        return await ejecutarConsulta(query);
+        return await ejecutarConsultaNeon(query);
     }
 
     static async verTicketPorId() {
