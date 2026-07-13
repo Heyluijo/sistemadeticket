@@ -39,6 +39,17 @@
                         </select>
                     </div>
 
+                    <div class="mb-4">
+                        <label class="block text-sm font-bold text-gray-800 mb-2">Prioridad</label>
+                        <select class="w-full border border-gray-300 p-2 rounded text-sm text-gray-700"
+                            id="selectPrioridad">
+                            <option value="Baja">🟢 Baja</option>
+                            <option value="Media" selected>🟡 Media</option>
+                            <option value="Alta">🟠 Alta</option>
+                            <option value="Critica">🔴 Crítica</option>
+                        </select>
+                    </div>
+
                     <div class="mb-6">
                         <label class="block text-sm font-bold text-gray-800 mb-2">¿Cuál es el problema?</label>
                         <textarea
@@ -72,6 +83,9 @@
                                     <th
                                         class="border border-gray-200 px-4 py-3 text-[10px] text-gray-600 font-bold uppercase">
                                         CATEGORÍA</th>
+                                    <th
+                                        class="border border-gray-200 px-4 py-3 text-[10px] text-gray-600 font-bold uppercase">
+                                        PRIORIDAD</th>
                                     <th
                                         class="border border-gray-200 px-4 py-3 text-[10px] text-gray-600 font-bold uppercase">
                                         DETALLE</th>
@@ -125,8 +139,21 @@
 
             const btnCrearTicket = document.querySelector('#btnCrearTicket');
             const tablaTickets = document.querySelector('#tablaTickets');
+            const selectPrioridad = document.querySelector('#selectPrioridad');
             const usuario_id = "<%= user.id %>";
             const usuario = "<%= user.usuario %>";
+
+            // Helper para pintar el badge de prioridad
+            function badgePrioridad(prioridad) {
+                const estilos = {
+                    Baja: 'bg-green-100 border-green-300 text-green-700',
+                    Media: 'bg-yellow-100 border-yellow-300 text-yellow-700',
+                    Alta: 'bg-orange-100 border-orange-300 text-orange-700',
+                    Critica: 'bg-red-100 border-red-300 text-red-700',
+                };
+                const clase = estilos[prioridad] || estilos.Media;
+                return `<span class="${clase} border px-2 py-1 rounded text-[10px] font-bold uppercase shadow-sm">${prioridad}</span>`;
+            }
 
             // Cargar Tickets del Usuario
             function cargarTickets() {
@@ -150,6 +177,7 @@
                                 <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800 text-xs">t-${ticket.id}</td>
                                 <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">${fecha}</td>
                                 <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs w-32">${ticket.nombre}</td>
+                                <td class="border border-gray-200 px-4 py-4">${badgePrioridad(ticket.prioridad)}</td>
                                 <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">${ticket.descripcion}</td>
                                 <td class="border border-gray-200 px-4 py-4 text-gray-500 text-[10px]">${tecnico}</td>
                                 <td class="border border-gray-200 px-4 py-4">${estado}</td>
@@ -188,6 +216,7 @@
                         id_tecnico: null,
                         usuario_id: Number(usuario_id),
                         usuario: usuario,
+                        prioridad: selectPrioridad.value,
                     }),
                 })
                     .then(response => response.json())
@@ -197,6 +226,7 @@
                             // Limpiar campos
                             document.querySelector('#descripcionTicket').value = '';
                             selectCategory.value = '';
+                            selectPrioridad.value = 'Media';
                             // Recargar tabla de tickets
                             cargarTickets();
                         } else {

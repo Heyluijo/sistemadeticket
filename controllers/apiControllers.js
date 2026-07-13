@@ -146,11 +146,14 @@ export const asignarRol = async (req, res) => {
     }
 }
 
+const PRIORIDADES_VALIDAS = ['Baja', 'Media', 'Alta', 'Critica'];
+
 // CREAR TICKET
 export const crearTicketPost = async (req, res) => {
     try {
-        const { nombre, descripcion, tecnico_automatico, id_tecnico, usuario_id, usuario } = req.body
-        const result = await ticketRepositorio.crearTicket(nombre, descripcion, tecnico_automatico, id_tecnico, usuario_id, usuario)
+        const { nombre, descripcion, tecnico_automatico, id_tecnico, usuario_id, usuario, prioridad } = req.body
+        const prioridadFinal = PRIORIDADES_VALIDAS.includes(prioridad) ? prioridad : 'Media'
+        const result = await ticketRepositorio.crearTicket(nombre, descripcion, tecnico_automatico, id_tecnico, usuario_id, usuario, prioridadFinal)
 
         if (typeof result === 'string') {
             return res.render('register.ejs', { error: result })
@@ -216,6 +219,38 @@ export const verUsuariosAsignados = async (req, res) => {
     } catch (error) {
         console.error('Error en verUsuarioAsignado:', error)
         res.status(401).json({ message: 'Error interno del servidor' })
+    }
+}
+
+export const verTecnicosSoporte = async (req, res) => {
+    try {
+        const result = await RepositorioUsuario.verTecnicosSoporte()
+        res.status(200).json(result)
+    } catch (error) {
+        console.error('Error en verTecnicosSoporte:', error)
+        res.status(500).json({ message: 'Error interno del servidor' })
+    }
+}
+
+// ASIGNAR TÉCNICO DE SOPORTE A UN TICKET
+export const asignarTecnico = async (req, res) => {
+    try {
+        const { id, tecnico_asignado_id } = req.body
+
+        if (!id) {
+            return res.status(400).json({ message: 'Falta el id del ticket' })
+        }
+
+        const result = await ticketRepositorio.asignarTecnico(id, tecnico_asignado_id || null)
+
+        if (!result || result.length === 0) {
+            return res.status(404).json({ message: 'Ticket no encontrado' })
+        }
+
+        res.status(200).json({ message: 'Técnico asignado correctamente', ticket: result[0] })
+    } catch (error) {
+        console.error('Error en asignarTecnico:', error)
+        res.status(500).json({ message: 'Error interno del servidor' })
     }
 }
 

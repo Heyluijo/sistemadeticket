@@ -2,7 +2,7 @@ import { ejecutarConsultaNeon } from "../database/dbNeon.js";
 
 class ticketRepositorio {
 
-    static async crearTicket(nombre, descripcion, tecnico_automatico, id_tecnico, usuario_id, usuario) {
+    static async crearTicket(nombre, descripcion, tecnico_automatico, id_tecnico, usuario_id, usuario, prioridad = 'Media') {
 
         const fecha_creacion = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
@@ -14,6 +14,7 @@ class ticketRepositorio {
             tecnico_asignado_id,
             usuario_id,
             usuario,
+            prioridad,
             fecha_creacion,
             fecha_cierre
         )
@@ -25,6 +26,7 @@ class ticketRepositorio {
             $5,
             $6,
             $7,
+            $8,
             NULL
         ) RETURNING *;
         `;
@@ -35,6 +37,7 @@ class ticketRepositorio {
             id_tecnico,
             usuario_id,
             usuario,
+            prioridad,
             fecha_creacion
         ]);
     }
@@ -55,6 +58,16 @@ class ticketRepositorio {
 
     static async actualizarTicket() {
 
+    }
+
+    static async asignarTecnico(id, tecnico_asignado_id) {
+        const query = `
+            UPDATE tickets
+            SET tecnico_asignado_id = $2, tecnico_automatico = false
+            WHERE id = $1
+            RETURNING *;
+        `;
+        return await ejecutarConsultaNeon(query, [id, tecnico_asignado_id]);
     }
 
     static async eliminarTicket() {

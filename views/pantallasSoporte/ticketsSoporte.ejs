@@ -54,6 +54,9 @@
                                 CATEGORÍA
                             </th>
                             <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
+                                PRIORIDAD
+                            </th>
+                            <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
                                 DESCRIPCIÓN</th>
                             <th
                                 class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase text-center">
@@ -75,6 +78,17 @@
             const tablaTickets = document.querySelector('#tablaTicketsSoporte');
             const categoriaSoporte = `<%= user.categoriaAsignada || '' %>`;
 
+            function badgePrioridad(prioridad) {
+                const estilos = {
+                    Baja: 'bg-green-100 border-green-300 text-green-700',
+                    Media: 'bg-yellow-100 border-yellow-300 text-yellow-700',
+                    Alta: 'bg-orange-100 border-orange-300 text-orange-700',
+                    Critica: 'bg-red-100 border-red-300 text-red-700',
+                };
+                const clase = estilos[prioridad] || estilos.Media;
+                return `<span class="${clase} border px-2 py-1 rounded text-[10px] font-bold uppercase shadow-sm">${prioridad}</span>`;
+            }
+
             function cargarTickets() {
                 fetch('/verTickets')
                     .then(response => response.json())
@@ -89,7 +103,7 @@
                         if (ticketsFiltrados.length === 0) {
                             tablaTickets.innerHTML = `
                                 <tr>
-                                    <td colspan="7" class="border border-gray-200 px-4 py-8 text-center text-gray-500 italic">
+                                    <td colspan="8" class="border border-gray-200 px-4 py-8 text-center text-gray-500 italic">
                                         No hay tickets asignados a tu categoría (${categoriaSoporte || 'Sin categoría'})
                                     </td>
                                 </tr>
@@ -114,6 +128,7 @@
                                 <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">${fecha}</td>
                                 <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800 text-xs">${ticket.usuario}</td>
                                 <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs">${ticket.nombre}</td>
+                                <td class="border border-gray-200 px-4 py-4">${badgePrioridad(ticket.prioridad)}</td>
                                 <td class="border border-gray-200 px-4 py-4 text-gray-800 text-xs">${ticket.descripcion}</td>
                                 <td class="border border-gray-200 px-4 py-4 text-center">${estado}</td>
                                 <td class="border border-gray-200 px-4 py-4 text-center">${accion}</td>
@@ -125,7 +140,7 @@
                         console.error('Error al cargar tickets:', error);
                         tablaTickets.innerHTML = `
                             <tr>
-                                <td colspan="7" class="border border-gray-200 px-4 py-8 text-center text-red-500 italic">
+                                <td colspan="8" class="border border-gray-200 px-4 py-8 text-center text-red-500 italic">
                                     Error al cargar los tickets. Por favor, intenta de nuevo más tarde.
                                 </td>
                             </tr>

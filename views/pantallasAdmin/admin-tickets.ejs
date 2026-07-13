@@ -38,6 +38,9 @@
                             <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
                                 CATEGORIAS
                             </th>
+                            <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
+                                PRIORIDAD
+                            </th>
 
                             <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
                                 DESCRIPCION</th>
@@ -59,10 +62,95 @@
             </div>
         </div>
 
+        <div id="modalAsignarTecnico" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+            <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm">
+                <h3 class="text-lg font-bold text-gray-800 mb-1">Asignar técnico de soporte</h3>
+                <p class="text-xs text-gray-500 mb-4">Ticket <span id="modalTicketId" class="font-bold"></span></p>
+                <select id="selectTecnico"
+                    class="w-full border border-gray-300 p-2 rounded text-sm text-gray-700 mb-4">
+                    <option value="">Sin asignar</option>
+                </select>
+                <div class="flex justify-end space-x-2">
+                    <button onclick="cerrarModalAsignar()"
+                        class="bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs px-4 py-2 rounded font-bold">Cancelar</button>
+                    <button onclick="confirmarAsignarTecnico()"
+                        class="bg-blue-500 hover:bg-blue-600 text-white text-xs px-4 py-2 rounded font-bold">Guardar</button>
+                </div>
+            </div>
+        </div>
+
         <script>
+            let ticketIdEnEdicion = null;
+            let tecnicosMap = {};
+
             document.addEventListener('DOMContentLoaded', () => {
-                cargarTickets();
+                cargarTecnicos().then(cargarTickets);
             });
+
+            function cargarTecnicos() {
+                return fetch('/verTecnicosSoporte')
+                    .then(response => response.json())
+                    .then(tecnicos => {
+                        tecnicosMap = {};
+                        tecnicos.forEach(t => {
+                            tecnicosMap[t.id] = `${t.nombre} ${t.apellido}`;
+                        });
+
+                        const select = document.querySelector('#selectTecnico');
+                        select.innerHTML = '<option value="">Sin asignar</option>' +
+                            tecnicos.map(t =>
+                                `<option value="${t.id}">${t.nombre} ${t.apellido} (${t.categoriaAsignada || 'Sin categoría'})</option>`
+                            ).join('');
+                    })
+                    .catch(error => console.error('Error al cargar técnicos:', error));
+            }
+
+            function editarTicket(id) {
+                ticketIdEnEdicion = id;
+                document.querySelector('#modalTicketId').textContent = 't-' + id;
+                document.querySelector('#modalAsignarTecnico').classList.remove('hidden');
+                document.querySelector('#modalAsignarTecnico').classList.add('flex');
+            }
+
+            function cerrarModalAsignar() {
+                document.querySelector('#modalAsignarTecnico').classList.add('hidden');
+                document.querySelector('#modalAsignarTecnico').classList.remove('flex');
+                ticketIdEnEdicion = null;
+            }
+
+            function confirmarAsignarTecnico() {
+                const tecnicoId = document.querySelector('#selectTecnico').value;
+
+                fetch('/asignarTecnico', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: ticketIdEnEdicion,
+                        tecnico_asignado_id: tecnicoId ? Number(tecnicoId) : null
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);
+                        cerrarModalAsignar();
+                        cargarTickets();
+                    })
+                    .catch(error => {
+                        console.error('Error al asignar técnico:', error);
+                        alert('Ocurrió un error al asignar el técnico.');
+                    });
+            }
+
+            function badgePrioridad(prioridad) {
+                const estilos = {
+                    Baja: 'bg-green-100 border-green-300 text-green-700',
+                    Media: 'bg-yellow-100 border-yellow-300 text-yellow-700',
+                    Alta: 'bg-orange-100 border-orange-300 text-orange-700',
+                    Critica: 'bg-red-100 border-red-300 text-red-700',
+                };
+                const clase = estilos[prioridad] || estilos.Media;
+                return `<span class="${clase} border px-2 py-1 rounded text-[10px] font-bold uppercase shadow-sm">${prioridad}</span>`;
+            }
 
             function cargarTickets() {
                 fetch('/verTickets')
@@ -87,7 +175,9 @@
                             }
 
                             // Soporte técnico
-                            let soporteTexto = t.soporte_tecnico || 'Sin asignar';
+                            let soporteTexto = t.tecnico_asignado_id
+                                ? (tecnicosMap[t.tecnico_asignado_id] || `Técnico #${t.tecnico_asignado_id}`)
+                                : 'Sin asignar';
 
                             // Botones de acción
                             let acciones = `
@@ -115,6 +205,9 @@
                                 <td class="border border-gray-200 px-4 py-4">
                                     <p class="font-bold text-gray-800 text-xs">${t.nombre}</p>
                                 </td>
+                                <td class="border border-gray-200 px-4 py-4">
+                                    ${badgePrioridad(t.prioridad)}
+                                </td>
 
                                 <td class="border border-gray-200 px-4 py-4 text-gray-800 text-xs font-bold">
                                     ${t.descripcion.substring(0, 30)}...
@@ -134,12 +227,6 @@
                             tabla.appendChild(fila);
                         });
                     });
-            }
-
-            function editarTicket(id) {
-                // Implementar la edición modal o redirección
-                alert('Editar ticket: ' + id);
-                // window.location.href = '/admin/tickets/' + id;
             }
 
             function borrarTicket(id) {

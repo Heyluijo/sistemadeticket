@@ -82,6 +82,16 @@ export class RepositorioUsuario {
         return usuarioDb;
     }
 
+    static async verTecnicosSoporte() {
+        const query = `
+            SELECT id, nombre, apellido, "categoriaAsignada"
+            FROM usuarios
+            WHERE rol = 'Soporte'
+            ORDER BY nombre;
+        `;
+        return await ejecutarConsultaNeon(query);
+    }
+
     static async asignarRol(id, rol) {
         if (!id || !rol) {
             return false;

@@ -39,4 +39,6 @@ router.post('/crearTicket', verificarToken, apiController.crearTicketPost) // PO
 router.get('/verTickets', verificarToken, apiController.verTicketsGet) // GET VER TICKETS
 router.put('/asignarRol', verificarToken, apiController.asignarRol) // PUT ASIGNAR ROL
 router.get('/verUsuariosAsignados', apiController.verUsuariosAsignados) // GET VER USUARIOS ASIGNADOS
+router.get('/verTecnicosSoporte', verificarToken, rolesAutorizados('Admin', 'Gerente'), apiController.verTecnicosSoporte) // GET LISTA DE TECNICOS DE SOPORTE
+router.put('/asignarTecnico', verificarToken, rolesAutorizados('Admin', 'Gerente'), apiController.asignarTecnico) // PUT ASIGNAR TECNICO A TICKET
 export default router;
