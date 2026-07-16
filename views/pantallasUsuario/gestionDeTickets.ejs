@@ -2,11 +2,13 @@
 
     <body class="bg-gray-100 flex h-screen font-sans">
 
-        <div class="w-64 bg-slate-800 text-white flex flex-col">
-            <div class="p-4 mt-2">
+        <% let homeUrl='/gestionDeTicket' ; if (user.rol==='Admin' ) homeUrl='/admin' ; else if (user.rol==='Gerente'
+            ) homeUrl='/gerente' ; else if (user.rol==='Soporte' ) homeUrl='/soporte' ; %>
+            <div class="w-64 bg-slate-800 text-white flex flex-col">
+                <a href="<%= homeUrl %>" class="block p-4 mt-2 hover:bg-slate-700 transition rounded">
                 <h1 class="text-xl font-bold text-blue-400">IT Tickets</h1>
                 <p class="text-xs text-gray-400">Tarea de Soporte Técnico</p>
-            </div>
+            </a>
 
             <div class="m-4 p-3 rounded">
                 <%- include('../components/menuAdmin.ejs', { activeTab: 'gestionDeTicket' }) %>
@@ -18,9 +20,16 @@
         </div>
 
         <div class="flex-1 p-8 overflow-y-auto">
-            <div class="mb-8 border-b border-gray-300 pb-4">
-                <h2 class="text-3xl font-bold text-gray-800 mb-1">Panel de Solicitudes</h2>
-                <p class="text-gray-500 text-sm">Crea tickets y revisa el estado de tu soporte técnico</p>
+            <div class="mb-8 border-b border-gray-300 pb-4 flex items-start justify-between gap-6 flex-wrap">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-1">Panel de Solicitudes</h2>
+                    <p class="text-gray-500 text-sm">Crea tickets y revisa el estado de tu soporte técnico</p>
+                </div>
+                <div data-avatar-menu
+                    class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm shrink-0 cursor-pointer"
+                    title="<%= user.nombre %> <%= user.apellido %>">
+                    <%= (user.nombre || '?').charAt(0).toUpperCase() %><%= (user.apellido || '?').charAt(0).toUpperCase() %>
+                </div>
             </div>
 
             <div class="flex space-x-6">
@@ -57,6 +66,13 @@
                             placeholder="Escribe aquí los detalles del problema..." id="descripcionTicket"></textarea>
                     </div>
 
+                    <div class="mb-6">
+                        <label class="block text-sm font-bold text-gray-800 mb-2">Captura de pantalla (opcional)</label>
+                        <input type="file" id="adjuntoTicket" accept="image/png,image/jpeg,image/gif,image/webp"
+                            class="w-full border border-gray-300 p-2 rounded text-sm text-gray-700">
+                        <p class="text-[10px] text-gray-400 mt-1">Formatos: JPG, PNG, GIF, WEBP. Máximo 5MB.</p>
+                    </div>
+
                     <button
                         class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded w-full flex items-center justify-center"
                         id="btnCrearTicket">
@@ -70,6 +86,23 @@
                         <h3 class="text-lg font-bold text-gray-800">Mis Solicitudes de Soporte</h3>
                     </div>
 
+                    <div class="flex gap-3 mb-4">
+                        <input type="text" id="buscarTicket" placeholder="Buscar por categoría o descripción..."
+                            class="flex-1 border border-gray-300 rounded px-3 py-2 text-sm text-gray-700">
+                        <select id="filtroEstado" class="border border-gray-300 rounded px-3 py-2 text-sm text-gray-700">
+                            <option value="">Todos los estados</option>
+                            <option value="abierto">Abierto</option>
+                            <option value="solucionado">Solucionado</option>
+                        </select>
+                        <select id="filtroPrioridad" class="border border-gray-300 rounded px-3 py-2 text-sm text-gray-700">
+                            <option value="">Todas las prioridades</option>
+                            <option value="Baja">Baja</option>
+                            <option value="Media">Media</option>
+                            <option value="Alta">Alta</option>
+                            <option value="Critica">Crítica</option>
+                        </select>
+                    </div>
+
                     <div class="overflow-x-auto pb-4">
                         <table class="w-full border-collapse border border-gray-100 text-sm text-left min-w-[700px]">
                             <thead class="bg-gray-50">
@@ -77,15 +110,17 @@
                                     <th
                                         class="border border-gray-200 px-4 py-3 text-[10px] text-gray-600 font-bold uppercase">
                                         ID</th>
-                                    <th
-                                        class="border border-gray-200 px-4 py-3 text-[10px] text-gray-600 font-bold uppercase">
-                                        FECHA</th>
+                                    <th onclick="ordenarPor('fecha')"
+                                        class="border border-gray-200 px-4 py-3 text-[10px] text-gray-600 font-bold uppercase cursor-pointer select-none hover:bg-gray-100">
+                                        FECHA <span id="flecha-fecha"></span>
+                                    </th>
                                     <th
                                         class="border border-gray-200 px-4 py-3 text-[10px] text-gray-600 font-bold uppercase">
                                         CATEGORÍA</th>
-                                    <th
-                                        class="border border-gray-200 px-4 py-3 text-[10px] text-gray-600 font-bold uppercase">
-                                        PRIORIDAD</th>
+                                    <th onclick="ordenarPor('prioridad')"
+                                        class="border border-gray-200 px-4 py-3 text-[10px] text-gray-600 font-bold uppercase cursor-pointer select-none hover:bg-gray-100">
+                                        PRIORIDAD <span id="flecha-prioridad"></span>
+                                    </th>
                                     <th
                                         class="border border-gray-200 px-4 py-3 text-[10px] text-gray-600 font-bold uppercase">
                                         DETALLE</th>
@@ -155,35 +190,112 @@
                 return `<span class="${clase} border px-2 py-1 rounded text-[10px] font-bold uppercase shadow-sm">${prioridad}</span>`;
             }
 
+            let misTicketsCache = [];
+            const buscarTicket = document.querySelector('#buscarTicket');
+            const filtroEstado = document.querySelector('#filtroEstado');
+            const filtroPrioridad = document.querySelector('#filtroPrioridad');
+
+            function verDetalleTicket(id) {
+                const ticket = misTicketsCache.find(t => t.id === id);
+                if (!ticket) return;
+                mostrarDetalleTicket(ticket, null);
+            }
+
+            function pintarTickets(tickets) {
+                tablaTickets.innerHTML = '';
+
+                if (tickets.length === 0) {
+                    tablaTickets.innerHTML = `<tr><td colspan="7" class="border border-gray-200 px-4 py-8 text-center text-gray-500 italic">No se encontraron tickets con esos filtros</td></tr>`;
+                    return;
+                }
+
+                tickets.forEach(ticket => {
+                    const tr = document.createElement('tr');
+                    const fecha = new Date(ticket.fecha_creacion).toLocaleDateString('es-ES');
+                    const tecnico = ticket.tecnico_asignado_id ? `Técnico #${ticket.tecnico_asignado_id}` : 'Asignación manual';
+
+                    const estado = ticket.fecha_cierre ?
+                        `<span class="bg-green-100 border border-green-300 text-green-700 px-2 py-1 rounded text-[10px] font-bold uppercase shadow-sm">SOLUCIONADO</span>` :
+                        `<span class="bg-yellow-100 border border-yellow-300 text-yellow-700 px-2 py-1 rounded text-[10px] font-bold uppercase shadow-sm">ABIERTO</span>`;
+
+                    tr.innerHTML = `
+                        <td class="border border-gray-200 px-4 py-4 font-bold text-xs">
+                            <button onclick="verDetalleTicket(${ticket.id})" class="text-gray-800 hover:text-blue-600 hover:underline">t-${ticket.id} 👁️</button>
+                        </td>
+                        <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">${fecha}</td>
+                        <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs w-32">${ticket.nombre}</td>
+                        <td class="border border-gray-200 px-4 py-4">${badgePrioridad(ticket.prioridad)}</td>
+                        <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">${ticket.descripcion}${ticket.adjunto ? ` <a href="${ticket.adjunto}" target="_blank" class="text-blue-500 underline">📎 Ver</a>` : ''}</td>
+                        <td class="border border-gray-200 px-4 py-4 text-gray-500 text-[10px]">${tecnico}</td>
+                        <td class="border border-gray-200 px-4 py-4">${estado}</td>
+                    `;
+                    tablaTickets.appendChild(tr);
+                });
+            }
+
+            const RANGO_PRIORIDAD = { Baja: 1, Media: 2, Alta: 3, Critica: 4 };
+            let sortColumna = null;
+            let sortDireccion = 'asc';
+
+            function ordenarPor(columna) {
+                if (sortColumna === columna) {
+                    sortDireccion = sortDireccion === 'asc' ? 'desc' : 'asc';
+                } else {
+                    sortColumna = columna;
+                    sortDireccion = 'asc';
+                }
+                document.querySelectorAll('[id^="flecha-"]').forEach(el => el.textContent = '');
+                const flecha = document.getElementById('flecha-' + columna);
+                if (flecha) flecha.textContent = sortDireccion === 'asc' ? '▲' : '▼';
+                aplicarFiltros();
+            }
+
+            function ordenarTickets(lista) {
+                if (!sortColumna) return lista;
+                const copia = [...lista];
+                copia.sort((a, b) => {
+                    let valA, valB;
+                    if (sortColumna === 'fecha') {
+                        valA = new Date(a.fecha_creacion).getTime();
+                        valB = new Date(b.fecha_creacion).getTime();
+                    } else if (sortColumna === 'prioridad') {
+                        valA = RANGO_PRIORIDAD[a.prioridad] || 0;
+                        valB = RANGO_PRIORIDAD[b.prioridad] || 0;
+                    }
+                    return sortDireccion === 'asc' ? valA - valB : valB - valA;
+                });
+                return copia;
+            }
+
+            function aplicarFiltros() {
+                const texto = buscarTicket.value.trim().toLowerCase();
+                const estado = filtroEstado.value;
+                const prioridad = filtroPrioridad.value;
+
+                const filtrados = misTicketsCache.filter(t => {
+                    const coincideTexto = !texto || t.nombre.toLowerCase().includes(texto) || t.descripcion.toLowerCase().includes(texto);
+                    const coincideEstado = !estado || (estado === 'solucionado' ? !!t.fecha_cierre : !t.fecha_cierre);
+                    const coincidePrioridad = !prioridad || t.prioridad === prioridad;
+                    return coincideTexto && coincideEstado && coincidePrioridad;
+                });
+
+                pintarTickets(ordenarTickets(filtrados));
+            }
+
+            [buscarTicket, filtroEstado, filtroPrioridad].forEach(el => {
+                el.addEventListener('input', aplicarFiltros);
+                el.addEventListener('change', aplicarFiltros);
+            });
+
             // Cargar Tickets del Usuario
             function cargarTickets() {
+                tablaTickets.innerHTML = filaCargando(7);
                 fetch('/verTickets')
                     .then(response => response.json())
                     .then(tickets => {
-                        tablaTickets.innerHTML = '';
                         // Filtrar para mostrar solo los de este usuario
-                        const misTickets = tickets.filter(t => t.usuario_id == usuario_id);
-
-                        misTickets.forEach(ticket => {
-                            const tr = document.createElement('tr');
-                            const fecha = new Date(ticket.fecha_creacion).toLocaleDateString('es-ES');
-                            const tecnico = ticket.tecnico_asignado_id ? `Técnico #${ticket.tecnico_asignado_id}` : 'Asignación manual';
-
-                            const estado = ticket.fecha_cierre ?
-                                `<span class="bg-green-100 border border-green-300 text-green-700 px-2 py-1 rounded text-[10px] font-bold uppercase shadow-sm">SOLUCIONADO</span>` :
-                                `<span class="bg-yellow-100 border border-yellow-300 text-yellow-700 px-2 py-1 rounded text-[10px] font-bold uppercase shadow-sm">ABIERTO</span>`;
-
-                            tr.innerHTML = `
-                                <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800 text-xs">t-${ticket.id}</td>
-                                <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">${fecha}</td>
-                                <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs w-32">${ticket.nombre}</td>
-                                <td class="border border-gray-200 px-4 py-4">${badgePrioridad(ticket.prioridad)}</td>
-                                <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">${ticket.descripcion}</td>
-                                <td class="border border-gray-200 px-4 py-4 text-gray-500 text-[10px]">${tecnico}</td>
-                                <td class="border border-gray-200 px-4 py-4">${estado}</td>
-                            `;
-                            tablaTickets.appendChild(tr);
-                        });
+                        misTicketsCache = tickets.filter(t => t.usuario_id == usuario_id);
+                        aplicarFiltros();
                     })
                     .catch(error => console.error('Error al cargar tickets:', error));
             }
@@ -193,49 +305,50 @@
                 const descripcionTicket = document.querySelector('#descripcionTicket').value;
 
                 if (!selectCategory.value) {
-                    alert('Por favor, selecciona una categoría.');
+                    mostrarToast('Por favor, selecciona una categoría.', 'error');
                     return;
                 }
                 if (!descripcionTicket.trim()) {
-                    alert('Por favor, describe el problema.');
+                    mostrarToast('Por favor, describe el problema.', 'error');
                     return;
                 }
 
                 // Guardamos el texto de la categoría como "nombre"
                 const nombreCategoria = selectCategory.options[selectCategory.selectedIndex].text;
+                const adjuntoInput = document.querySelector('#adjuntoTicket');
+
+                const formData = new FormData();
+                formData.append('nombre', nombreCategoria);
+                formData.append('descripcion', descripcionTicket);
+                formData.append('usuario_id', usuario_id);
+                formData.append('usuario', usuario);
+                formData.append('prioridad', selectPrioridad.value);
+                if (adjuntoInput.files[0]) {
+                    formData.append('adjunto', adjuntoInput.files[0]);
+                }
 
                 fetch('/crearTicket', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        nombre: nombreCategoria,
-                        descripcion: descripcionTicket,
-                        tecnico_automatico: false,
-                        id_tecnico: null,
-                        usuario_id: Number(usuario_id),
-                        usuario: usuario,
-                        prioridad: selectPrioridad.value,
-                    }),
+                    body: formData,
                 })
                     .then(response => response.json())
                     .then(data => {
                         if (data.message === "ticket Creado") {
-                            alert('¡Ticket enviado correctamente!');
+                            mostrarToast('¡Ticket enviado correctamente!', 'exito');
                             // Limpiar campos
                             document.querySelector('#descripcionTicket').value = '';
                             selectCategory.value = '';
                             selectPrioridad.value = 'Media';
+                            adjuntoInput.value = '';
                             // Recargar tabla de tickets
                             cargarTickets();
                         } else {
-                            alert('Error al crear el ticket: ' + (data.message || 'Error desconocido'));
+                            mostrarToast('Error al crear el ticket: ' + (data.message || 'Error desconocido'), 'error');
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert('Ocurrió un error al enviar el ticket.');
+                        mostrarToast('Ocurrió un error al enviar el ticket.', 'error');
                     });
             }
 

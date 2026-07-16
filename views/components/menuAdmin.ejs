@@ -1,10 +1,10 @@
-<div class="bg-slate-500 p-2 ">
-    <p class="font-bold text-center text-sm">Bienvenido: </p>
-    <p class="oswald uppercase text-center ">
+<div class="bg-slate-700 rounded-lg p-3 mb-2">
+    <p class="font-bold text-center text-xs text-gray-300 uppercase tracking-wide">Bienvenido</p>
+    <p class="oswald uppercase text-center text-white text-sm mt-1">
         <%= user.nombre %>
             <%= user.apellido %>
     </p>
-    <p class="text-slate-200 text-xs text-center font-bold mt-1">[ <%= user.rol %> ]</p>
+    <p class="text-blue-300 text-xs text-center font-bold mt-1">[ <%= user.rol %> ]</p>
 </div>
 <% if (user.rol==='Admin' ) { %>
     <div class="">

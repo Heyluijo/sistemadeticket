@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administrar Usuarios</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/js/ui-utils.js" defer></script>
 </head>
 
 <body class="bg-gray-100 flex h-screen font-sans">
@@ -13,15 +14,22 @@
     <%- include('../partials/menuLateral.ejs', { activeTab: 'usuarios' }) %>
 
         <div class="flex-1 p-8 overflow-y-auto z-10">
-            <div class="flex justify-between items-center mb-8 border-b border-gray-300 pb-4">
+            <div class="flex justify-between items-center mb-8 border-b border-gray-300 pb-4 gap-6 flex-wrap">
                 <div>
                     <h2 class="text-3xl font-bold text-gray-800 mb-1">Administrar Usuarios</h2>
                     <p class="text-gray-500 text-sm">Crear, modificar y borrar cuentas de usuario del sistema</p>
                 </div>
-                <button
-                    class="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded shadow font-bold flex items-center">
-                    <span class="mr-2 text-lg">+</span> Nuevo Usuario
-                </button>
+                <div class="flex items-center gap-4">
+                    <button onclick="abrirModalNuevoUsuario()"
+                        class="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded shadow font-bold flex items-center">
+                        <span class="mr-2 text-lg">+</span> Nuevo Usuario
+                    </button>
+                    <div data-avatar-menu
+                        class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm shrink-0 cursor-pointer"
+                        title="<%= user.nombre %> <%= user.apellido %>">
+                        <%= (user.nombre || '?').charAt(0).toUpperCase() %><%= (user.apellido || '?').charAt(0).toUpperCase() %>
+                    </div>
+                </div>
             </div>
 
             <div class="bg-white p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
@@ -79,10 +87,12 @@
                                         </select>
 
                                         <button
+                                            onclick="abrirModalEditar(<%= usuario.id %>, '<%= usuario.nombre %>', '<%= usuario.apellido %>', '<%= usuario.email %>')"
                                             class="bg-yellow-500 hover:bg-yellow-600 text-white text-xs px-3 py-1 rounded flex items-center font-bold shadow">
-                                            <span class="mr-1 text-sm" id="btnEdit">✏️</span> Editar
+                                            <span class="mr-1 text-sm">✏️</span> Editar
                                         </button>
                                         <button
+                                            onclick="borrarUsuario(<%= usuario.id %>, '<%= usuario.nombre %> <%= usuario.apellido %>')"
                                             class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded flex items-center font-bold shadow">
                                             <span class="mr-1 text-sm">🗑️</span> Borrar
                                         </button>
@@ -95,7 +105,201 @@
             </div>
         </div>
 
+        <div id="modalNuevoUsuario" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+            <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Nuevo usuario</h3>
+
+                <div class="mb-3">
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Nombre</label>
+                    <input id="nuevoNombre" type="text"
+                        class="w-full border border-gray-300 p-2 rounded text-sm text-gray-700">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Apellido</label>
+                    <input id="nuevoApellido" type="text"
+                        class="w-full border border-gray-300 p-2 rounded text-sm text-gray-700">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Usuario</label>
+                    <input id="nuevoUsuario" type="text"
+                        class="w-full border border-gray-300 p-2 rounded text-sm text-gray-700">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Correo</label>
+                    <input id="nuevoEmail" type="email"
+                        class="w-full border border-gray-300 p-2 rounded text-sm text-gray-700">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Contraseña</label>
+                    <input id="nuevoPassword" type="password"
+                        class="w-full border border-gray-300 p-2 rounded text-sm text-gray-700">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Rol</label>
+                    <select id="nuevoRol" class="w-full border border-gray-300 p-2 rounded text-sm text-gray-700 bg-white">
+                        <option value="Usuario">Usuario</option>
+                        <option value="Soporte">Soporte</option>
+                        <option value="Gerente">Gerente</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                </div>
+
+                <div class="flex justify-end space-x-2">
+                    <button onclick="cerrarModalNuevoUsuario()"
+                        class="bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs px-4 py-2 rounded font-bold">Cancelar</button>
+                    <button onclick="guardarNuevoUsuario()"
+                        class="bg-blue-500 hover:bg-blue-600 text-white text-xs px-4 py-2 rounded font-bold">Crear</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="modalEditarUsuario" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+            <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Editar usuario</h3>
+
+                <div class="mb-3">
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Nombre</label>
+                    <input id="editNombre" type="text"
+                        class="w-full border border-gray-300 p-2 rounded text-sm text-gray-700">
+                </div>
+                <div class="mb-3">
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Apellido</label>
+                    <input id="editApellido" type="text"
+                        class="w-full border border-gray-300 p-2 rounded text-sm text-gray-700">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Correo</label>
+                    <input id="editEmail" type="email"
+                        class="w-full border border-gray-300 p-2 rounded text-sm text-gray-700">
+                </div>
+
+                <div class="flex justify-end space-x-2">
+                    <button onclick="cerrarModalEditar()"
+                        class="bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs px-4 py-2 rounded font-bold">Cancelar</button>
+                    <button onclick="guardarEdicionUsuario()"
+                        class="bg-blue-500 hover:bg-blue-600 text-white text-xs px-4 py-2 rounded font-bold">Guardar</button>
+                </div>
+            </div>
+        </div>
+
         <script>
+            let usuarioIdEnEdicion = null;
+
+            function abrirModalNuevoUsuario() {
+                document.querySelector('#nuevoNombre').value = '';
+                document.querySelector('#nuevoApellido').value = '';
+                document.querySelector('#nuevoUsuario').value = '';
+                document.querySelector('#nuevoEmail').value = '';
+                document.querySelector('#nuevoPassword').value = '';
+                document.querySelector('#nuevoRol').value = 'Usuario';
+                document.querySelector('#modalNuevoUsuario').classList.remove('hidden');
+                document.querySelector('#modalNuevoUsuario').classList.add('flex');
+            }
+
+            function cerrarModalNuevoUsuario() {
+                document.querySelector('#modalNuevoUsuario').classList.add('hidden');
+                document.querySelector('#modalNuevoUsuario').classList.remove('flex');
+            }
+
+            async function guardarNuevoUsuario() {
+                const nombre = document.querySelector('#nuevoNombre').value.trim();
+                const apellido = document.querySelector('#nuevoApellido').value.trim();
+                const usuario = document.querySelector('#nuevoUsuario').value.trim();
+                const email = document.querySelector('#nuevoEmail').value.trim();
+                const password = document.querySelector('#nuevoPassword').value;
+                const rol = document.querySelector('#nuevoRol').value;
+
+                if (!nombre || !apellido || !usuario || !email || !password) {
+                    mostrarToast('Todos los campos son obligatorios.', 'error');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/crearUsuarioAdmin', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ nombre, apellido, usuario, email, password, rol })
+                    });
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        cerrarModalNuevoUsuario();
+                        mostrarToast('Usuario creado correctamente', 'exito');
+                        setTimeout(() => window.location.reload(), 600);
+                    } else {
+                        mostrarToast('Error al crear usuario: ' + data.message, 'error');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    mostrarToast('Error de red al crear el usuario', 'error');
+                }
+            }
+
+            function abrirModalEditar(id, nombre, apellido, email) {
+                usuarioIdEnEdicion = id;
+                document.querySelector('#editNombre').value = nombre;
+                document.querySelector('#editApellido').value = apellido;
+                document.querySelector('#editEmail').value = email;
+                document.querySelector('#modalEditarUsuario').classList.remove('hidden');
+                document.querySelector('#modalEditarUsuario').classList.add('flex');
+            }
+
+            function cerrarModalEditar() {
+                document.querySelector('#modalEditarUsuario').classList.add('hidden');
+                document.querySelector('#modalEditarUsuario').classList.remove('flex');
+                usuarioIdEnEdicion = null;
+            }
+
+            async function guardarEdicionUsuario() {
+                const nombre = document.querySelector('#editNombre').value.trim();
+                const apellido = document.querySelector('#editApellido').value.trim();
+                const email = document.querySelector('#editEmail').value.trim();
+
+                if (!nombre || !apellido || !email) {
+                    mostrarToast('Todos los campos son obligatorios.', 'error');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/editarUsuario', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: usuarioIdEnEdicion, nombre, apellido, email })
+                    });
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        cerrarModalEditar();
+                        mostrarToast('Usuario actualizado correctamente', 'exito');
+                        setTimeout(() => window.location.reload(), 600);
+                    } else {
+                        mostrarToast('Error al actualizar: ' + data.message, 'error');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    mostrarToast('Error de red al actualizar el usuario', 'error');
+                }
+            }
+
+            async function borrarUsuario(id, nombreCompleto) {
+                if (!(await confirmarAccion('¿Estás seguro de que quieres borrar a ' + nombreCompleto + '? Esta acción no se puede deshacer.'))) return;
+
+                try {
+                    const response = await fetch('/eliminarUsuario/' + id, { method: 'DELETE' });
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        mostrarToast('Usuario eliminado correctamente', 'exito');
+                        setTimeout(() => window.location.reload(), 600);
+                    } else {
+                        mostrarToast('Error al borrar: ' + data.message, 'error');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    mostrarToast('Error de red al borrar el usuario', 'error');
+                }
+            }
+
             async function cambiarRol(usuarioId, nuevoRol) {
                 try {
                     const response = await fetch('/asignarRol', {
@@ -111,14 +315,14 @@
 
                     const data = await response.json();
                     if (response.ok) {
-                        alert('Rol actualizado correctamente');
-                        window.location.reload();
+                        mostrarToast('Rol actualizado correctamente', 'exito');
+                        setTimeout(() => window.location.reload(), 600);
                     } else {
-                        alert('Error al actualizar el rol: ' + data.message);
+                        mostrarToast('Error al actualizar el rol: ' + data.message, 'error');
                     }
                 } catch (error) {
                     console.error('Error:', error);
-                    alert('Error de red al actualizar el rol');
+                    mostrarToast('Error de red al actualizar el rol', 'error');
                 }
             }
         </script>

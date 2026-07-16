@@ -14,8 +14,34 @@ export const renderSoporte = (req, res) => {
 }
 
 //GERENTE
-export const renderGerente = (req, res) => {
-    res.render('pantallasGerente/ticketsGerente.ejs')
+export const renderGerente = async (req, res) => {
+    try {
+        const [tickets, desempeno, categorias] = await Promise.all([
+            ticketRepositorio.verTickets(),
+            ticketRepositorio.desempenoSoporte(),
+            ticketRepositorio.serviciosPorCategoria()
+        ])
+        const totalTickets = tickets.length
+        const abiertos = tickets.filter(t => !t.fecha_cierre).length
+        const solucionados = tickets.filter(t => t.fecha_cierre).length
+
+        res.render('pantallasGerente/ticketsGerente.ejs', {
+            totalTickets,
+            abiertos,
+            solucionados,
+            desempeno,
+            categorias
+        })
+    } catch (error) {
+        console.error('Error en renderGerente:', error)
+        res.render('pantallasGerente/ticketsGerente.ejs', {
+            totalTickets: 0,
+            abiertos: 0,
+            solucionados: 0,
+            desempeno: [],
+            categorias: []
+        })
+    }
 }
 
 //USUARIO
@@ -24,14 +50,42 @@ export const renderUsuario = (req, res) => {
 }
 
 //ADMIN
-export const renderAdmin = (req, res) => {
-    res.render('pantallasAdmin/admin-panelGeneral.ejs')
+export const renderAdmin = async (req, res) => {
+    try {
+        const [usuarios, categorias, tickets, ticketsPorCategoria, actividad, desempeno] = await Promise.all([
+            RepositorioUsuario.verUsuarios(),
+            categoriaRepositorio.getCategorias(),
+            ticketRepositorio.verTickets(),
+            ticketRepositorio.serviciosPorCategoria(),
+            ticketRepositorio.actividadReciente(5),
+            ticketRepositorio.desempenoSoporte()
+        ])
+
+        res.render('pantallasAdmin/admin-panelGeneral.ejs', {
+            totalUsuarios: usuarios.length,
+            totalCategorias: categorias.length,
+            totalTickets: tickets.length,
+            ticketsPorCategoria,
+            actividad,
+            desempeno
+        })
+    } catch (error) {
+        console.error('Error en renderAdmin:', error)
+        res.render('pantallasAdmin/admin-panelGeneral.ejs', {
+            totalUsuarios: 0,
+            totalCategorias: 0,
+            totalTickets: 0,
+            ticketsPorCategoria: [],
+            actividad: [],
+            desempeno: []
+        })
+    }
 }
 export const renderAdminCategorias = (req, res) => {
     res.render('pantallasAdmin/admin-categorias.ejs')
 }
 export const renderAdminTickets = (req, res) => {
-    res.render('pantallasAdmin/admin-tickets.ejs')
+    res.render('pantallasAdmin/admin-tickets.ejs', { busquedaInicial: req.query.buscar || '' })
 }
 export const renderAdminUsuarios = async (req, res) => {
     const usuarios = await RepositorioUsuario.verUsuarios()
@@ -151,9 +205,10 @@ const PRIORIDADES_VALIDAS = ['Baja', 'Media', 'Alta', 'Critica'];
 // CREAR TICKET
 export const crearTicketPost = async (req, res) => {
     try {
-        const { nombre, descripcion, tecnico_automatico, id_tecnico, usuario_id, usuario, prioridad } = req.body
+        const { nombre, descripcion, usuario_id, usuario, prioridad } = req.body
         const prioridadFinal = PRIORIDADES_VALIDAS.includes(prioridad) ? prioridad : 'Media'
-        const result = await ticketRepositorio.crearTicket(nombre, descripcion, tecnico_automatico, id_tecnico, usuario_id, usuario, prioridadFinal)
+        const adjunto = req.file ? `/uploads/tickets/${req.file.filename}` : null
+        const result = await ticketRepositorio.crearTicket(nombre, descripcion, false, null, usuario_id, usuario, prioridadFinal, adjunto)
 
         if (typeof result === 'string') {
             return res.render('register.ejs', { error: result })
@@ -205,6 +260,62 @@ export const verCategorias = async (req, res) => {
 
 }
 
+// CREAR CATEGORÍA
+export const crearCategoriaPost = async (req, res) => {
+    try {
+        const { nombreCategoria, descripcion } = req.body
+
+        if (!nombreCategoria || !descripcion) {
+            return res.status(400).json({ message: 'El nombre y la descripción son obligatorios' })
+        }
+
+        const result = await categoriaRepositorio.crearCategoria(nombreCategoria, descripcion)
+        res.status(200).json({ message: 'Categoría creada correctamente', categoria: result[0] })
+    } catch (error) {
+        console.error('Error en crearCategoriaPost:', error)
+        res.status(500).json({ message: 'Error interno del servidor' })
+    }
+}
+
+// EDITAR CATEGORÍA
+export const editarCategoriaPut = async (req, res) => {
+    try {
+        const { id, nombreCategoria, descripcion } = req.body
+
+        if (!id || !nombreCategoria || !descripcion) {
+            return res.status(400).json({ message: 'Faltan datos obligatorios' })
+        }
+
+        const result = await categoriaRepositorio.editarCategoria(id, nombreCategoria, descripcion)
+
+        if (!result || result.length === 0) {
+            return res.status(404).json({ message: 'Categoría no encontrada' })
+        }
+
+        res.status(200).json({ message: 'Categoría actualizada correctamente', categoria: result[0] })
+    } catch (error) {
+        console.error('Error en editarCategoriaPut:', error)
+        res.status(500).json({ message: 'Error interno del servidor' })
+    }
+}
+
+// BORRAR CATEGORÍA
+export const eliminarCategoriaDelete = async (req, res) => {
+    try {
+        const { id } = req.params
+        const result = await categoriaRepositorio.eliminarCategoria(id)
+
+        if (!result || result.length === 0) {
+            return res.status(404).json({ message: 'Categoría no encontrada' })
+        }
+
+        res.status(200).json({ message: 'Categoría eliminada correctamente' })
+    } catch (error) {
+        console.error('Error en eliminarCategoriaDelete:', error)
+        res.status(500).json({ message: 'Error interno del servidor' })
+    }
+}
+
 export const verUsuariosAsignados = async (req, res) => {
     try {
         console.log('Se solicito el usuario asignado')
@@ -219,6 +330,70 @@ export const verUsuariosAsignados = async (req, res) => {
     } catch (error) {
         console.error('Error en verUsuarioAsignado:', error)
         res.status(401).json({ message: 'Error interno del servidor' })
+    }
+}
+
+// CREAR USUARIO NUEVO DESDE ADMINISTRAR USUARIOS
+export const crearUsuarioAdminPost = async (req, res) => {
+    try {
+        const { nombre, apellido, usuario, email, password, rol } = req.body
+        const result = await RepositorioUsuario.crearUsuarioAdmin(nombre, apellido, usuario, email, password, rol)
+
+        if (typeof result === 'string') {
+            return res.status(400).json({ message: result })
+        }
+
+        res.status(200).json({ message: 'Usuario creado correctamente', usuario: result[0] })
+    } catch (error) {
+        console.error('Error en crearUsuarioAdminPost:', error)
+        if (error.code === '23505') {
+            return res.status(400).json({ message: 'Ese usuario o correo ya existe' })
+        }
+        res.status(500).json({ message: 'Error interno del servidor' })
+    }
+}
+
+// EDITAR NOMBRE/APELLIDO/EMAIL DE UN USUARIO
+export const editarUsuarioPut = async (req, res) => {
+    try {
+        const { id, nombre, apellido, email } = req.body
+
+        if (!id || !nombre || !apellido || !email) {
+            return res.status(400).json({ message: 'Faltan datos obligatorios' })
+        }
+
+        const result = await RepositorioUsuario.editarUsuario(id, nombre, apellido, email)
+
+        if (!result || result.length === 0) {
+            return res.status(404).json({ message: 'Usuario no encontrado' })
+        }
+
+        res.status(200).json({ message: 'Usuario actualizado correctamente', usuario: result[0] })
+    } catch (error) {
+        console.error('Error en editarUsuarioPut:', error)
+        res.status(500).json({ message: 'Error interno del servidor' })
+    }
+}
+
+// BORRAR UN USUARIO
+export const eliminarUsuarioDelete = async (req, res) => {
+    try {
+        const { id } = req.params
+
+        if (Number(id) === req.user.id) {
+            return res.status(400).json({ message: 'No puedes borrar tu propia cuenta' })
+        }
+
+        const result = await RepositorioUsuario.eliminarUsuario(id)
+
+        if (!result || result.length === 0) {
+            return res.status(404).json({ message: 'Usuario no encontrado' })
+        }
+
+        res.status(200).json({ message: 'Usuario eliminado correctamente' })
+    } catch (error) {
+        console.error('Error en eliminarUsuarioDelete:', error)
+        res.status(500).json({ message: 'Error interno del servidor' })
     }
 }
 
@@ -250,6 +425,29 @@ export const asignarTecnico = async (req, res) => {
         res.status(200).json({ message: 'Técnico asignado correctamente', ticket: result[0] })
     } catch (error) {
         console.error('Error en asignarTecnico:', error)
+        res.status(500).json({ message: 'Error interno del servidor' })
+    }
+}
+
+// CAMBIAR ESTADO DEL TICKET (marcar como solucionado o reabrir)
+export const cambiarEstadoTicket = async (req, res) => {
+    try {
+        const { id, cerrado } = req.body
+
+        if (!id) {
+            return res.status(400).json({ message: 'Falta el id del ticket' })
+        }
+
+        const result = await ticketRepositorio.cambiarEstadoTicket(id, Boolean(cerrado))
+
+        if (!result || result.length === 0) {
+            return res.status(404).json({ message: 'Ticket no encontrado' })
+        }
+
+        const mensaje = cerrado ? 'Ticket marcado como solucionado' : 'Ticket reabierto'
+        res.status(200).json({ message: mensaje, ticket: result[0] })
+    } catch (error) {
+        console.error('Error en cambiarEstadoTicket:', error)
         res.status(500).json({ message: 'Error interno del servidor' })
     }
 }

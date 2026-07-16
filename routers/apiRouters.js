@@ -2,6 +2,7 @@ import { Router } from 'express';
 import * as apiController from '../controllers/apiControllers.js';
 import { verificarToken } from '../middlewares/authMiddleware.js';
 import { rolesAutorizados } from '../middlewares/verificaRol.js';
+import { uploadAdjuntoTicket } from '../middlewares/upload.js';
 
 const router = Router();
 
@@ -33,12 +34,19 @@ router.get('/adminCategorias', verificarToken, rolesAutorizados('Admin'), apiCon
 router.get('/adminTickets', verificarToken, rolesAutorizados('Admin'), apiController.renderAdminTickets) // ADMINISTRADOR
 router.get('/adminUsuarios', verificarToken, rolesAutorizados('Admin'), apiController.renderAdminUsuarios) // ADMINISTRADOR
 router.get('/verCategorias', verificarToken, apiController.verCategorias) // VER CATEGORIAS
+router.post('/crearCategoria', verificarToken, rolesAutorizados('Admin'), apiController.crearCategoriaPost) // POST CREAR CATEGORIA
+router.put('/editarCategoria', verificarToken, rolesAutorizados('Admin'), apiController.editarCategoriaPut) // PUT EDITAR CATEGORIA
+router.delete('/eliminarCategoria/:id', verificarToken, rolesAutorizados('Admin'), apiController.eliminarCategoriaDelete) // DELETE BORRAR CATEGORIA
 
 router.get('/logout', apiController.logoutGet) // LOGOUT
-router.post('/crearTicket', verificarToken, apiController.crearTicketPost) // POST CREAR TICKET
+router.post('/crearTicket', verificarToken, uploadAdjuntoTicket, apiController.crearTicketPost) // POST CREAR TICKET
 router.get('/verTickets', verificarToken, apiController.verTicketsGet) // GET VER TICKETS
 router.put('/asignarRol', verificarToken, apiController.asignarRol) // PUT ASIGNAR ROL
+router.post('/crearUsuarioAdmin', verificarToken, rolesAutorizados('Admin'), apiController.crearUsuarioAdminPost) // POST CREAR USUARIO DESDE ADMIN
+router.put('/editarUsuario', verificarToken, rolesAutorizados('Admin'), apiController.editarUsuarioPut) // PUT EDITAR USUARIO
+router.delete('/eliminarUsuario/:id', verificarToken, rolesAutorizados('Admin'), apiController.eliminarUsuarioDelete) // DELETE BORRAR USUARIO
 router.get('/verUsuariosAsignados', apiController.verUsuariosAsignados) // GET VER USUARIOS ASIGNADOS
 router.get('/verTecnicosSoporte', verificarToken, rolesAutorizados('Admin', 'Gerente'), apiController.verTecnicosSoporte) // GET LISTA DE TECNICOS DE SOPORTE
 router.put('/asignarTecnico', verificarToken, rolesAutorizados('Admin', 'Gerente'), apiController.asignarTecnico) // PUT ASIGNAR TECNICO A TICKET
+router.put('/cambiarEstadoTicket', verificarToken, rolesAutorizados('Soporte', 'Admin', 'Gerente'), apiController.cambiarEstadoTicket) // PUT CERRAR O REABRIR TICKET
 export default router;

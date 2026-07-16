@@ -2,11 +2,13 @@
 
     <body class="bg-gray-100 flex h-screen font-sans">
 
-        <div class="w-64 bg-slate-800 text-white flex flex-col">
-            <div class="p-4 mt-2">
+        <% let homeUrl='/gestionDeTicket' ; if (user.rol==='Admin' ) homeUrl='/admin' ; else if (user.rol==='Gerente'
+            ) homeUrl='/gerente' ; else if (user.rol==='Soporte' ) homeUrl='/soporte' ; %>
+            <div class="w-64 bg-slate-800 text-white flex flex-col">
+                <a href="<%= homeUrl %>" class="block p-4 mt-2 hover:bg-slate-700 transition rounded">
                 <h1 class="text-xl font-bold text-blue-400">IT Tickets</h1>
                 <p class="text-xs text-gray-400">Tarea de Soporte Técnico</p>
-            </div>
+            </a>
 
             <div class="bg-slate-700 m-4 p-3 rounded">
                 <p class="font-bold text-sm">
@@ -28,9 +30,16 @@
         </div>
 
         <div class="flex-1 p-8 overflow-y-auto">
-            <div class="mb-8 border-b border-gray-300 pb-4">
-                <h2 class="text-3xl font-bold text-gray-800 mb-1">Casos por Resolver</h2>
-                <p class="text-gray-500 text-sm">Listado de solicitudes asignadas a tu cuenta de soporte</p>
+            <div class="mb-8 border-b border-gray-300 pb-4 flex items-start justify-between gap-6 flex-wrap">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-1">Casos por Resolver</h2>
+                    <p class="text-gray-500 text-sm">Listado de solicitudes asignadas a tu cuenta de soporte</p>
+                </div>
+                <div data-avatar-menu
+                    class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm shrink-0 cursor-pointer"
+                    title="<%= user.nombre %> <%= user.apellido %>">
+                    <%= (user.nombre || '?').charAt(0).toUpperCase() %><%= (user.apellido || '?').charAt(0).toUpperCase() %>
+                </div>
             </div>
 
             <div class="bg-white p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
@@ -39,22 +48,42 @@
                     <h3 class="text-lg font-bold text-gray-800">Mi Bandeja</h3>
                 </div>
 
+                <div class="flex gap-3 mb-4">
+                    <input type="text" id="buscarTicket" placeholder="Buscar por usuario o descripción..."
+                        class="flex-1 border border-gray-300 rounded px-3 py-2 text-sm text-gray-700">
+                    <select id="filtroEstado" class="border border-gray-300 rounded px-3 py-2 text-sm text-gray-700">
+                        <option value="">Todos los estados</option>
+                        <option value="abierto">Abierto</option>
+                        <option value="solucionado">Solucionado</option>
+                    </select>
+                    <select id="filtroPrioridad" class="border border-gray-300 rounded px-3 py-2 text-sm text-gray-700">
+                        <option value="">Todas las prioridades</option>
+                        <option value="Baja">Baja</option>
+                        <option value="Media">Media</option>
+                        <option value="Alta">Alta</option>
+                        <option value="Critica">Crítica</option>
+                    </select>
+                </div>
+
                 <table class="w-full border-collapse border border-gray-100 text-sm text-left">
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">ID
                             </th>
-                            <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
+                            <th onclick="ordenarPor('fecha')"
+                                class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase cursor-pointer select-none hover:bg-gray-100">
                                 REPORTADO
-                                EL</th>
+                                EL <span id="flecha-fecha"></span>
+                            </th>
                             <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
                                 USUARIO
                             </th>
                             <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
                                 CATEGORÍA
                             </th>
-                            <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
-                                PRIORIDAD
+                            <th onclick="ordenarPor('prioridad')"
+                                class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase cursor-pointer select-none hover:bg-gray-100">
+                                PRIORIDAD <span id="flecha-prioridad"></span>
                             </th>
                             <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
                                 DESCRIPCIÓN</th>
@@ -89,29 +118,86 @@
                 return `<span class="${clase} border px-2 py-1 rounded text-[10px] font-bold uppercase shadow-sm">${prioridad}</span>`;
             }
 
-            function cargarTickets() {
-                fetch('/verTickets')
-                    .then(response => response.json())
-                    .then(tickets => {
+            let ticketsSoporteCache = [];
+            const buscarTicket = document.querySelector('#buscarTicket');
+            const filtroEstado = document.querySelector('#filtroEstado');
+            const filtroPrioridad = document.querySelector('#filtroPrioridad');
 
-                        tablaTickets.innerHTML = '';
+            function verDetalleTicket(id) {
+                const ticket = ticketsSoporteCache.find(t => t.id === id);
+                if (!ticket) return;
+                mostrarDetalleTicket(ticket, null);
+            }
 
-                        const ticketsFiltrados = tickets.filter(ticket =>
-                            ticket.nombre.trim().toLowerCase() === categoriaSoporte.trim().toLowerCase()
-                        );
+            const RANGO_PRIORIDAD = { Baja: 1, Media: 2, Alta: 3, Critica: 4 };
+            let sortColumna = null;
+            let sortDireccion = 'asc';
 
-                        if (ticketsFiltrados.length === 0) {
-                            tablaTickets.innerHTML = `
-                                <tr>
-                                    <td colspan="8" class="border border-gray-200 px-4 py-8 text-center text-gray-500 italic">
-                                        No hay tickets asignados a tu categoría (${categoriaSoporte || 'Sin categoría'})
-                                    </td>
-                                </tr>
-                            `;
-                            return;
-                        }
+            function ordenarPor(columna) {
+                if (sortColumna === columna) {
+                    sortDireccion = sortDireccion === 'asc' ? 'desc' : 'asc';
+                } else {
+                    sortColumna = columna;
+                    sortDireccion = 'asc';
+                }
+                document.querySelectorAll('[id^="flecha-"]').forEach(el => el.textContent = '');
+                const flecha = document.getElementById('flecha-' + columna);
+                if (flecha) flecha.textContent = sortDireccion === 'asc' ? '▲' : '▼';
+                aplicarFiltros();
+            }
 
-                        ticketsFiltrados.forEach(ticket => {
+            function ordenarTickets(lista) {
+                if (!sortColumna) return lista;
+                const copia = [...lista];
+                copia.sort((a, b) => {
+                    let valA, valB;
+                    if (sortColumna === 'fecha') {
+                        valA = new Date(a.fecha_creacion).getTime();
+                        valB = new Date(b.fecha_creacion).getTime();
+                    } else if (sortColumna === 'prioridad') {
+                        valA = RANGO_PRIORIDAD[a.prioridad] || 0;
+                        valB = RANGO_PRIORIDAD[b.prioridad] || 0;
+                    }
+                    return sortDireccion === 'asc' ? valA - valB : valB - valA;
+                });
+                return copia;
+            }
+
+            function aplicarFiltros() {
+                const texto = buscarTicket.value.trim().toLowerCase();
+                const estado = filtroEstado.value;
+                const prioridad = filtroPrioridad.value;
+
+                const filtrados = ticketsSoporteCache.filter(t => {
+                    const coincideTexto = !texto || t.usuario.toLowerCase().includes(texto) || t.descripcion.toLowerCase().includes(texto);
+                    const coincideEstado = !estado || (estado === 'solucionado' ? !!t.fecha_cierre : !t.fecha_cierre);
+                    const coincidePrioridad = !prioridad || t.prioridad === prioridad;
+                    return coincideTexto && coincideEstado && coincidePrioridad;
+                });
+
+                pintarTickets(ordenarTickets(filtrados));
+            }
+
+            [buscarTicket, filtroEstado, filtroPrioridad].forEach(el => {
+                el.addEventListener('input', aplicarFiltros);
+                el.addEventListener('change', aplicarFiltros);
+            });
+
+            function pintarTickets(ticketsFiltrados) {
+                tablaTickets.innerHTML = '';
+
+                if (ticketsFiltrados.length === 0) {
+                    tablaTickets.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="border border-gray-200 px-4 py-8 text-center text-gray-500 italic">
+                                No hay tickets que coincidan con tu categoría (${categoriaSoporte || 'Sin categoría'}) y los filtros aplicados
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                ticketsFiltrados.forEach(ticket => {
                             const tr = document.createElement('tr');
                             const fecha = new Date(ticket.fecha_creacion).toLocaleDateString('es-ES');
 
@@ -119,9 +205,11 @@
                                 `<span class="bg-green-100 border border-green-300 text-green-700 px-2 py-1 rounded text-[10px] font-bold uppercase shadow-sm">SOLUCIONADO</span>` :
                                 `<span class="bg-yellow-100 border border-yellow-300 text-yellow-700 px-2 py-1 rounded text-[10px] font-bold uppercase shadow-sm">ABIERTO</span>`;
 
-                            const accion = ticket.fecha_cierre ?
-                                `<span class="text-gray-400 italic text-xs">Terminado</span>` :
-                                `<span class="text-gray-500 italic text-xs">En espera</span>`;
+                            const botonVer = `<button onclick="verDetalleTicket(${ticket.id})" class="bg-slate-500 hover:bg-slate-600 text-white text-[10px] px-2 py-1 rounded font-bold shadow">👁️ Ver</button>`;
+                            const accion = (ticket.fecha_cierre ?
+                                `<button onclick="reabrirTicket(${ticket.id})" class="bg-gray-400 hover:bg-gray-500 text-white text-[10px] px-2 py-1 rounded font-bold shadow">↺ Reabrir</button>` :
+                                `<button onclick="cerrarTicket(${ticket.id})" class="bg-green-500 hover:bg-green-600 text-white text-[10px] px-2 py-1 rounded font-bold shadow">✔ Solucionado</button>`)
+                                + ' ' + botonVer;
 
                             tr.innerHTML = `
                                 <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800 text-xs">t-${ticket.id}</td>
@@ -129,12 +217,23 @@
                                 <td class="border border-gray-200 px-4 py-4 font-bold text-gray-800 text-xs">${ticket.usuario}</td>
                                 <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold text-xs">${ticket.nombre}</td>
                                 <td class="border border-gray-200 px-4 py-4">${badgePrioridad(ticket.prioridad)}</td>
-                                <td class="border border-gray-200 px-4 py-4 text-gray-800 text-xs">${ticket.descripcion}</td>
+                                <td class="border border-gray-200 px-4 py-4 text-gray-800 text-xs">${ticket.descripcion}${ticket.adjunto ? ` <a href="${ticket.adjunto}" target="_blank" class="text-blue-500 underline">📎 Ver</a>` : ''}</td>
                                 <td class="border border-gray-200 px-4 py-4 text-center">${estado}</td>
-                                <td class="border border-gray-200 px-4 py-4 text-center">${accion}</td>
+                                <td class="border border-gray-200 px-4 py-4 text-center"><div class="flex flex-col gap-1 items-center">${accion}</div></td>
                             `;
                             tablaTickets.appendChild(tr);
                         });
+            }
+
+            function cargarTickets() {
+                tablaTickets.innerHTML = filaCargando(8);
+                fetch('/verTickets')
+                    .then(response => response.json())
+                    .then(tickets => {
+                        ticketsSoporteCache = tickets.filter(ticket =>
+                            ticket.nombre.trim().toLowerCase() === categoriaSoporte.trim().toLowerCase()
+                        );
+                        aplicarFiltros();
                     })
                     .catch(error => {
                         console.error('Error al cargar tickets:', error);
@@ -149,6 +248,35 @@
             }
 
             cargarTickets();
+
+            // Marca el ticket como solucionado
+            async function cerrarTicket(id) {
+                if (!(await confirmarAccion('¿Marcar el ticket t-' + id + ' como solucionado?'))) return;
+                cambiarEstado(id, true);
+            }
+
+            // Vuelve a abrir un ticket que ya estaba solucionado
+            async function reabrirTicket(id) {
+                if (!(await confirmarAccion('¿Reabrir el ticket t-' + id + '?'))) return;
+                cambiarEstado(id, false);
+            }
+
+            function cambiarEstado(id, cerrado) {
+                fetch('/cambiarEstadoTicket', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, cerrado })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        mostrarToast(cerrado ? 'Ticket marcado como solucionado' : 'Ticket reabierto', 'exito');
+                        cargarTickets();
+                    })
+                    .catch(error => {
+                        console.error('Error al cambiar estado del ticket:', error);
+                        mostrarToast('Ocurrió un error al actualizar el ticket.', 'error');
+                    });
+            }
         </script>
 
     </body>

@@ -1,8 +1,10 @@
-<div class="w-64 bg-slate-800 text-white flex flex-col">
-    <div class="p-4 mt-2">
+<% let homeUrl='/gestionDeTicket' ; if (user.rol==='Admin' ) homeUrl='/admin' ; else if (user.rol==='Gerente' )
+    homeUrl='/gerente' ; else if (user.rol==='Soporte' ) homeUrl='/soporte' ; %>
+    <div class="w-64 bg-slate-800 text-white flex flex-col">
+        <a href="<%= homeUrl %>" class="block p-4 mt-2 hover:bg-slate-700 transition rounded">
         <h1 class="text-xl font-bold text-blue-400">IT Tickets</h1>
         <p class="text-xs text-gray-400">Tarea de Soporte Técnico</p>
-    </div>
+    </a>
 
     <div class="m-4 p-3 rounded">
         <%- include('../components/menuAdmin.ejs', { activeTab: locals.activeTab || '' }) %>

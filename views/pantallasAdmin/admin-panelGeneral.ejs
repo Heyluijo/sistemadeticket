@@ -5,57 +5,237 @@
     <%- include('../partials/menuLateral.ejs', { activeTab: 'general' }) %>
 
       <div class="flex-1 p-8 overflow-y-auto">
-        <div class="mb-8 border-b border-gray-300 pb-4">
-          <h2 class="text-3xl font-bold text-gray-800 mb-1">Consola de Administración</h2>
-          <p class="text-gray-500 text-sm">Gestión global de usuarios, categorías y estado de tickets del sistema</p>
-        </div>
-
-        <div class="flex space-x-6 mb-8">
-          <div class="bg-white p-5 border border-gray-200 rounded-lg shadow-sm w-1/3 relative">
-            <p class="text-xs text-gray-500 font-bold mb-2">USUARIOS DEL SISTEMA</p>
-            <p class="text-4xl text-blue-600 font-bold mb-6">6</p>
-            <p class="text-xs text-gray-500">Gestionar cuentas y roles →</p>
-            <span class="absolute top-5 right-5 text-blue-600">👥</span>
+        <div class="mb-8 border-b border-gray-300 pb-4 flex items-start justify-between gap-6 flex-wrap">
+          <div>
+            <h2 class="text-3xl font-bold text-gray-800 mb-1">Consola de Administración</h2>
+            <p class="text-gray-500 text-sm">Gestión global de usuarios, categorías y estado de tickets del sistema</p>
           </div>
-
-          <div class="bg-white p-5 border border-gray-200 rounded-lg shadow-sm w-1/3 relative">
-            <p class="text-xs text-gray-500 font-bold mb-2">CATEGORÍAS DE SOPORTE</p>
-            <p class="text-4xl text-purple-500 font-bold mb-6">4</p>
-            <p class="text-xs text-gray-500">Configurar auto-asignación →</p>
-            <span class="absolute top-5 right-5 text-orange-300">🏷️</span>
-          </div>
-
-          <div class="bg-white p-5 border border-gray-200 rounded-lg shadow-sm w-1/3 relative">
-            <p class="text-xs text-gray-500 font-bold mb-2">INCIDENCIAS TOTALES</p>
-            <p class="text-4xl text-green-500 font-bold mb-6">5</p>
-            <p class="text-xs text-gray-500">Ver, editar y eliminar tickets →</p>
-            <span class="absolute top-5 right-5 text-yellow-500">🎫</span>
+          <div class="flex items-center gap-4 shrink-0">
+            <form action="/adminTickets" method="GET" class="flex items-center">
+              <input type="text" name="buscar" placeholder="Buscar tickets..."
+                class="border border-gray-300 rounded-l px-4 py-2 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <button type="submit"
+                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-r text-sm">🔍</button>
+            </form>
+            <div data-avatar-menu
+              class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm shrink-0 cursor-pointer"
+              title="<%= user.nombre %> <%= user.apellido %>">
+              <%= (user.nombre || '?').charAt(0).toUpperCase() %><%= (user.apellido || '?').charAt(0).toUpperCase() %>
+            </div>
           </div>
         </div>
 
-        <div class="bg-white p-6 border border-gray-200 rounded-lg shadow-sm">
-          <div class="flex items-center mb-4">
-            <span class="text-xl mr-2">⚙️</span>
-            <h3 class="text-lg font-bold text-gray-800">Instrucciones Administrativas</h3>
-          </div>
+        <% const paletaCategorias=['#3b82f6', '#22c55e', '#f59e0b', '#a855f7', '#ef4444', '#14b8a6', '#ec4899',
+          '#64748b' ]; const totalConTickets=ticketsPorCategoria.reduce((acc, c)=> acc + c.creados, 0);
+          let acumulado = 0;
+          const segmentos = ticketsPorCategoria
+          .filter(c => c.creados > 0)
+          .map((c, i) => {
+          const pct = totalConTickets > 0 ? (c.creados / totalConTickets) * 100 : 0;
+          const inicio = acumulado;
+          acumulado += pct;
+          return {
+          color: paletaCategorias[i % paletaCategorias.length],
+          nombre: c.categoria,
+          cantidad: c.creados,
+          pct: Math.round(pct),
+          inicio,
+          fin: acumulado
+          };
+          });
+          const gradiente = segmentos.length> 0
+          ? segmentos.map(s => `${s.color} ${s.inicio}% ${s.fin}%`).join(', ')
+          : '#e5e7eb 0% 100%';
 
-          <div class="border-t border-gray-100 pt-4 mb-6">
-            <p class="text-sm text-gray-600 leading-relaxed">
-              Esta sección permite la administración total del sistema de tickets de soporte técnico IT. Puede modificar
-              libremente los datos de usuarios, cambiar las contraseñas que están almacenadas en texto plano, crear
-              nuevas
-              categorías asociadas a técnicos predeterminados para que funcione la auto-asignación, y modificar o
-              eliminar
-              las incidencias del sistema.
-            </p>
-          </div>
+          function tiempoRelativo(fecha) {
+          const diffMin = Math.floor((Date.now() - new Date(fecha).getTime()) / 60000);
+          if (diffMin < 1) return 'Justo ahora';
+          if (diffMin < 60) return `Hace ${diffMin} minuto${diffMin === 1 ? '' : 's'}`;
+          const diffHoras = Math.floor(diffMin / 60);
+          if (diffHoras < 24) return `Hace ${diffHoras} hora${diffHoras === 1 ? '' : 's'}`;
+          const diffDias = Math.floor(diffHoras / 24);
+          return `Hace ${diffDias} día${diffDias === 1 ? '' : 's'}`;
+          }
+          %>
 
-          <div class="flex space-x-3">
-            <button class="bg-blue-500 text-white text-sm px-4 py-2 rounded shadow">Administrar Usuarios</button>
-            <button class="bg-purple-500 text-white text-sm px-4 py-2 rounded shadow">Administrar Categorías</button>
-            <button class="bg-green-500 text-white text-sm px-4 py-2 rounded shadow">Administrar Tickets</button>
+          <div class="flex gap-6 items-start">
+            <div class="flex-1 min-w-0">
+              <div class="flex space-x-6 mb-8">
+                <a href="/adminUsuarios"
+                  class="bg-white p-5 border border-gray-200 rounded-lg shadow-sm w-1/3 relative block hover:shadow-md hover:border-blue-300 transition">
+                  <p class="text-xs text-gray-500 font-bold mb-2">USUARIOS DEL SISTEMA</p>
+                  <p class="text-4xl text-blue-600 font-bold mb-6">
+                    <%= totalUsuarios %>
+                  </p>
+                  <p class="text-xs text-gray-500">Gestionar cuentas y roles →</p>
+                  <span class="absolute top-5 right-5 text-blue-600">👥</span>
+                </a>
+
+                <a href="/adminCategorias"
+                  class="bg-white p-5 border border-gray-200 rounded-lg shadow-sm w-1/3 relative block hover:shadow-md hover:border-purple-300 transition">
+                  <p class="text-xs text-gray-500 font-bold mb-2">CATEGORÍAS DE SOPORTE</p>
+                  <p class="text-4xl text-purple-500 font-bold mb-6">
+                    <%= totalCategorias %>
+                  </p>
+                  <p class="text-xs text-gray-500">Configurar auto-asignación →</p>
+                  <span class="absolute top-5 right-5 text-orange-300">🏷️</span>
+                </a>
+
+                <a href="/adminTickets"
+                  class="bg-white p-5 border border-gray-200 rounded-lg shadow-sm w-1/3 relative block hover:shadow-md hover:border-green-300 transition">
+                  <p class="text-xs text-gray-500 font-bold mb-2">INCIDENCIAS TOTALES</p>
+                  <p class="text-4xl text-green-500 font-bold mb-6">
+                    <%= totalTickets %>
+                  </p>
+                  <p class="text-xs text-gray-500">Ver, editar y eliminar tickets →</p>
+                  <span class="absolute top-5 right-5 text-yellow-500">🎫</span>
+                </a>
+              </div>
+
+              <div class="bg-white p-6 border border-gray-200 rounded-lg shadow-sm">
+                <div class="flex items-center mb-4">
+                  <span class="text-xl mr-2">⚙️</span>
+                  <h3 class="text-lg font-bold text-gray-800">Instrucciones Administrativas</h3>
+                </div>
+
+                <div class="border-t border-gray-100 pt-4 mb-6">
+                  <p class="text-sm text-gray-600 leading-relaxed">
+                    Esta sección permite la administración total del sistema de tickets de soporte técnico IT. Puede
+                    modificar
+                    libremente los datos y roles de los usuarios (las contraseñas se guardan cifradas, no en texto
+                    plano),
+                    crear nuevas categorías asociadas a técnicos predeterminados para que funcione la auto-asignación, y
+                    modificar o eliminar las incidencias del sistema.
+                  </p>
+                </div>
+
+                <div class="flex space-x-3">
+                  <a href="/adminUsuarios"
+                    class="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded shadow inline-block">Administrar
+                    Usuarios</a>
+                  <a href="/adminCategorias"
+                    class="bg-purple-500 hover:bg-purple-600 text-white text-sm px-4 py-2 rounded shadow inline-block">Administrar
+                    Categorías</a>
+                  <a href="/adminTickets"
+                    class="bg-green-500 hover:bg-green-600 text-white text-sm px-4 py-2 rounded shadow inline-block">Administrar
+                    Tickets</a>
+                </div>
+              </div>
+
+              <div class="bg-white p-6 border border-gray-200 rounded-lg shadow-sm mt-6">
+                <div class="flex items-center mb-6">
+                  <span class="text-xl mr-2">👥</span>
+                  <h3 class="text-lg font-bold text-gray-800">Resumen de Técnicos</h3>
+                </div>
+
+                <% if (desempeno.length===0) { %>
+                  <p class="text-sm text-gray-400 italic">No hay técnicos de soporte registrados todavía.</p>
+                  <% } else { %>
+                    <div class="grid grid-cols-2 gap-x-8 gap-y-6">
+                      <% desempeno.forEach(function(tec) { %>
+                        <% const tasa=tec.asignados> 0 ? Math.round((tec.resueltos / tec.asignados) * 100) : 0; %>
+                          <div>
+                            <div class="flex justify-between text-sm mb-1">
+                              <span class="font-bold text-gray-800">
+                                <%= tec.nombre %>
+                                  <%= tec.apellido %> (<%= tec.categoriaAsignada || 'Sin categoría' %>)
+                              </span>
+                              <span class="text-gray-500 text-xs">
+                                <%= tec.asignados %> / <%= tec.resueltos %>
+                              </span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
+                              <div class="bg-blue-500 h-2.5 rounded-full" style="width: <%= tasa %>%"></div>
+                            </div>
+                            <div class="text-right text-[10px] text-gray-400">Tasa de resolución: <%= tasa %>%</div>
+                          </div>
+                          <% }) %>
+                    </div>
+                    <% } %>
+
+                      <a href="/gerente"
+                        class="text-blue-500 text-xs font-bold mt-6 inline-block hover:underline">Ver métricas
+                        completas →</a>
+              </div>
+            </div>
+
+            <div class="w-96 shrink-0">
+              <div class="bg-white p-6 border border-gray-200 rounded-lg shadow-sm">
+                <div class="flex items-center mb-6">
+                  <span class="text-xl mr-2">📊</span>
+                  <h3 class="text-lg font-bold text-gray-800">Tickets por Categoría</h3>
+                </div>
+
+                <% if (segmentos.length===0) { %>
+                  <p class="text-sm text-gray-400 italic">Todavía no hay tickets registrados.</p>
+                  <% } else { %>
+                    <div class="flex items-center gap-6 flex-wrap">
+                      <div class="relative w-36 h-36 shrink-0 rounded-full"
+                        style="background: conic-gradient(<%= gradiente %>);">
+                        <div
+                          class="absolute inset-[18%] bg-white rounded-full flex flex-col items-center justify-center shadow-inner">
+                          <span class="text-2xl font-bold text-gray-800">
+                            <%= totalConTickets %>
+                          </span>
+                          <span class="text-[10px] text-gray-500">Total</span>
+                        </div>
+                      </div>
+
+                      <div class="flex-1 min-w-35 space-y-2.5">
+                        <% segmentos.forEach(function(s) { %>
+                          <div class="flex items-center justify-between text-xs">
+                            <div class="flex items-center gap-2">
+                              <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: <%= s.color %>;"></span>
+                              <span class="text-gray-700 font-medium">
+                                <%= s.nombre %>
+                              </span>
+                            </div>
+                            <span class="text-gray-500">
+                              <%= s.cantidad %> (<%= s.pct %>%)
+                            </span>
+                          </div>
+                          <% }) %>
+                      </div>
+                    </div>
+                    <% } %>
+              </div>
+
+              <div class="bg-white p-6 border border-gray-200 rounded-lg shadow-sm mt-6">
+                <div class="flex items-center mb-4">
+                  <span class="text-xl mr-2">🕘</span>
+                  <h3 class="text-lg font-bold text-gray-800">Actividad reciente</h3>
+                </div>
+
+                <% if (actividad.length===0) { %>
+                  <p class="text-sm text-gray-400 italic">Sin actividad todavía.</p>
+                  <% } else { %>
+                    <div class="space-y-4">
+                      <% actividad.forEach(function(evento) { %>
+                        <div class="flex items-start gap-3">
+                          <span
+                            class="w-7 h-7 rounded-full flex items-center justify-center text-xs shrink-0 <%= evento.tipo === 'resuelto' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700' %>">
+                            <%= evento.tipo === 'resuelto' ? '✔' : '🎫' %>
+                          </span>
+                          <div class="min-w-0">
+                            <p class="text-sm text-gray-800 leading-tight">
+                              Ticket t-<%= evento.id %> (<%= evento.nombre %>)
+                                <%= evento.tipo==='resuelto' ? 'fue resuelto' : 'fue creado' %>
+                            </p>
+                            <p class="text-xs text-gray-400">
+                              <%= tiempoRelativo(evento.fecha) %>
+                            </p>
+                          </div>
+                        </div>
+                        <% }) %>
+                    </div>
+                    <% } %>
+
+                      <a href="/adminTickets"
+                        class="text-blue-500 text-xs font-bold mt-4 inline-block hover:underline">Ver toda la
+                        actividad →</a>
+              </div>
+            </div>
           </div>
-        </div>
       </div>
 
   </body>

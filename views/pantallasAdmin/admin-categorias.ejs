@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administrar Categorías</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/js/ui-utils.js" defer></script>
 </head>
 
 <body class="bg-gray-100 flex h-screen font-sans">
@@ -13,15 +14,22 @@
     <%- include('../partials/menuLateral.ejs', { activeTab: 'categorias' }) %>
 
         <div class="flex-1 p-8 overflow-y-auto">
-            <div class="flex justify-between items-center mb-8 border-b border-gray-300 pb-4">
+            <div class="flex justify-between items-center mb-8 border-b border-gray-300 pb-4 gap-6 flex-wrap">
                 <div>
                     <h2 class="text-3xl font-bold text-gray-800 mb-1">Administrar Categorías</h2>
-                    <p class="text-gray-500 text-sm">Configura clasificaciones y enlaces automáticos a técnicos</p>
+                    <p class="text-gray-500 text-sm">Configura las categorías de soporte disponibles en el sistema</p>
                 </div>
-                <button
-                    class="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded shadow font-bold flex items-center">
-                    <span class="mr-2 text-lg">+</span> Nueva Categoría
-                </button>
+                <div class="flex items-center gap-4">
+                    <button onclick="abrirModalCrear()"
+                        class="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded shadow font-bold flex items-center">
+                        <span class="mr-2 text-lg">+</span> Nueva Categoría
+                    </button>
+                    <div data-avatar-menu
+                        class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm shrink-0 cursor-pointer"
+                        title="<%= user.nombre %> <%= user.apellido %>">
+                        <%= (user.nombre || '?').charAt(0).toUpperCase() %><%= (user.apellido || '?').charAt(0).toUpperCase() %>
+                    </div>
+                </div>
             </div>
 
             <div class="bg-white p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
@@ -39,9 +47,6 @@
                             <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
                                 DESCRIPCIÓN</th>
                             <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
-                                TÉCNICO
-                                AUTOMÁTICO</th>
-                            <th class="border border-gray-200 px-4 py-3 text-xs text-gray-600 font-bold uppercase">
                                 ACCIONES
                             </th>
                         </tr>
@@ -52,36 +57,148 @@
                 </table>
             </div>
         </div>
+
+        <div id="modalCategoria" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+            <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm">
+                <h3 id="tituloModalCategoria" class="text-lg font-bold text-gray-800 mb-4">Nueva categoría</h3>
+
+                <div class="mb-3">
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Nombre</label>
+                    <input id="categoriaNombre" type="text"
+                        class="w-full border border-gray-300 p-2 rounded text-sm text-gray-700">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Descripción</label>
+                    <textarea id="categoriaDescripcion"
+                        class="w-full border border-gray-300 p-2 rounded text-sm text-gray-700 h-24 resize-none"></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-2">
+                    <button onclick="cerrarModalCategoria()"
+                        class="bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs px-4 py-2 rounded font-bold">Cancelar</button>
+                    <button onclick="guardarCategoria()"
+                        class="bg-blue-500 hover:bg-blue-600 text-white text-xs px-4 py-2 rounded font-bold">Guardar</button>
+                </div>
+            </div>
+        </div>
+
         <script>
             const listadoCategorias = document.querySelector('#listadoCategorias');
+            let categoriaIdEnEdicion = null;
 
-            fetch('/verUsuariosAsignados')
-                .then(response => response.json())
-                .then(usuarios => {
-                    listadoCategorias.innerHTML = '';
-                    usuarios.forEach(usuario => {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold w-48">${usuario.nombre}</td>
-                            <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">${usuario.categoria}</td>
-                            <td class="border border-gray-200 px-4 py-4 text-green-700 font-bold text-xs">${usuario.descripcion}</td>
-                            <td class="border border-gray-200 px-4 py-4">
-                                <div class="flex flex-col space-y-2 w-20">
-                                    <button
-                                        class="bg-yellow-500 hover:bg-yellow-600 text-white text-xs px-2 py-1 rounded flex items-center justify-center font-bold shadow">
-                                        <span class="mr-1 text-sm">✏️</span> Editar
-                                    </button>
-                                    <button
-                                        class="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded flex items-center justify-center font-bold shadow">
-                                        <span class="mr-1 text-sm">🗑️</span> Borrar
-                                    </button>
-                                </div>
-                            </td>
-                        `;
-                        listadoCategorias.appendChild(tr);
+            function cargarCategorias() {
+                listadoCategorias.innerHTML = filaCargando(3);
+                fetch('/verCategorias')
+                    .then(response => response.json())
+                    .then(categorias => {
+                        listadoCategorias.innerHTML = '';
+                        categorias.forEach(categoria => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td class="border border-gray-200 px-4 py-4 text-blue-600 font-bold w-48">${categoria.nombreCategoria}</td>
+                                <td class="border border-gray-200 px-4 py-4 text-gray-600 text-xs">${categoria.descripcion}</td>
+                                <td class="border border-gray-200 px-4 py-4">
+                                    <div class="flex flex-col space-y-2 w-20">
+                                        <button
+                                            onclick='abrirModalEditar(${categoria.id}, ${JSON.stringify(categoria.nombreCategoria)}, ${JSON.stringify(categoria.descripcion)})'
+                                            class="bg-yellow-500 hover:bg-yellow-600 text-white text-xs px-2 py-1 rounded flex items-center justify-center font-bold shadow">
+                                            <span class="mr-1 text-sm">✏️</span> Editar
+                                        </button>
+                                        <button
+                                            onclick="borrarCategoria(${categoria.id}, ${JSON.stringify(categoria.nombreCategoria)})"
+                                            class="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded flex items-center justify-center font-bold shadow">
+                                            <span class="mr-1 text-sm">🗑️</span> Borrar
+                                        </button>
+                                    </div>
+                                </td>
+                            `;
+                            listadoCategorias.appendChild(tr);
+                        });
+                    })
+                    .catch(err => console.error('Error al cargar categorías:', err));
+            }
+
+            function abrirModalCrear() {
+                categoriaIdEnEdicion = null;
+                document.querySelector('#tituloModalCategoria').textContent = 'Nueva categoría';
+                document.querySelector('#categoriaNombre').value = '';
+                document.querySelector('#categoriaDescripcion').value = '';
+                document.querySelector('#modalCategoria').classList.remove('hidden');
+                document.querySelector('#modalCategoria').classList.add('flex');
+            }
+
+            function abrirModalEditar(id, nombre, descripcion) {
+                categoriaIdEnEdicion = id;
+                document.querySelector('#tituloModalCategoria').textContent = 'Editar categoría';
+                document.querySelector('#categoriaNombre').value = nombre;
+                document.querySelector('#categoriaDescripcion').value = descripcion;
+                document.querySelector('#modalCategoria').classList.remove('hidden');
+                document.querySelector('#modalCategoria').classList.add('flex');
+            }
+
+            function cerrarModalCategoria() {
+                document.querySelector('#modalCategoria').classList.add('hidden');
+                document.querySelector('#modalCategoria').classList.remove('flex');
+                categoriaIdEnEdicion = null;
+            }
+
+            async function guardarCategoria() {
+                const nombreCategoria = document.querySelector('#categoriaNombre').value.trim();
+                const descripcion = document.querySelector('#categoriaDescripcion').value.trim();
+
+                if (!nombreCategoria || !descripcion) {
+                    mostrarToast('El nombre y la descripción son obligatorios.', 'error');
+                    return;
+                }
+
+                const esEdicion = categoriaIdEnEdicion !== null;
+                const url = esEdicion ? '/editarCategoria' : '/crearCategoria';
+                const method = esEdicion ? 'PUT' : 'POST';
+                const body = esEdicion
+                    ? { id: categoriaIdEnEdicion, nombreCategoria, descripcion }
+                    : { nombreCategoria, descripcion };
+
+                try {
+                    const response = await fetch(url, {
+                        method,
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
                     });
-                })
-                .catch(err => console.error('Error al cargar categorías:', err));
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        cerrarModalCategoria();
+                        mostrarToast(esEdicion ? 'Categoría actualizada correctamente' : 'Categoría creada correctamente', 'exito');
+                        cargarCategorias();
+                    } else {
+                        mostrarToast('Error: ' + data.message, 'error');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    mostrarToast('Error de red al guardar la categoría', 'error');
+                }
+            }
+
+            async function borrarCategoria(id, nombre) {
+                if (!(await confirmarAccion('¿Estás seguro de que quieres borrar la categoría "' + nombre + '"?'))) return;
+
+                try {
+                    const response = await fetch('/eliminarCategoria/' + id, { method: 'DELETE' });
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        mostrarToast('Categoría eliminada correctamente', 'exito');
+                        cargarCategorias();
+                    } else {
+                        mostrarToast('Error al borrar: ' + data.message, 'error');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    mostrarToast('Error de red al borrar la categoría', 'error');
+                }
+            }
+
+            cargarCategorias();
         </script>
 </body>
 
